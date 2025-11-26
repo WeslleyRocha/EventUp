@@ -1,0 +1,55 @@
+# ----------------------
+# Sistema Operacional - Mac (macOS)
+# ----------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ----------------------
+# Sistema Operacional - Windows
+# ----------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ----------------------
+# IDE - IntelliJ IDEA
+# ----------------------
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ----------------------
+# IDE - Eclipse
+# ----------------------
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# ⚠️ Importante para projetos Maven/Gradle (como o seu Spring Boot):
+# O Eclipse gera estes arquivos, mas se usar Maven, eles devem ser ignorados
+.classpath
+.project
+.springBeans
+
+# ----------------------
+# Build - Maven & Gradle
+# ----------------------
+target/
+build/
+.gradle/
+.mvn/wrapper/maven-wrapper.properties
