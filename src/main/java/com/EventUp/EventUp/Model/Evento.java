@@ -5,17 +5,17 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "eventos") // Nome da tabela no plural, boa prática
+@Table(name = "eventos")
 public class Evento implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_evento") // Garante que o nome da coluna seja id_evento
+    @Column(name = "id_evento")
     private Long id;
 
-    @Column(name = "nome_evento", nullable = false) // nullable=false torna obrigatório
+    @Column(name = "nome_evento", nullable = false)
     private String nomeEvento;
 
     @Column(name = "descricao_detalhada", columnDefinition = "TEXT")
@@ -28,7 +28,7 @@ public class Evento implements Serializable {
     private LocalDateTime dataHoraFim;
 
     @Column(name = "restricao_idade")
-    private Integer restricaoIdade; // Usar Integer permite nulo, int não.
+    private Integer restricaoIdade;
 
     @Column(name = "url_imagem_destaque")
     private String urlImagemDestaque;
@@ -40,17 +40,17 @@ public class Evento implements Serializable {
     private Double valorIngresso;
 
 
-    //Ligação com LOCAIS (Parte da Rillary)
-    @ManyToOne // Muitos Eventos podem ser no mesmo Local
-    @JoinColumn(name = "id_local", nullable = false) // A coluna no banco será id_local
+    //Parte da Rillary
+    @ManyToOne
+    @JoinColumn(name = "id_local", nullable = false)
     private Locais local;
 
-    //Ligação com CATEGORIA
-    @ManyToOne
-    @JoinColumn(name = "id_categoria", nullable = false)
-    private Categoria categoria;
+//    //Ligação com CATEGORIA
+//    @ManyToOne
+//    @JoinColumn(name = "id_categoria", nullable = false)
+//    private Categoria categoria;
 
-    //Ligação com USUARIO (Criador)
+
     @ManyToOne
     @JoinColumn(name = "id_usuario_criador", nullable = false)
     private Usuario usuarioCriador;
@@ -128,13 +128,13 @@ public class Evento implements Serializable {
         this.local = local;
     }
 
-    public Categoria getCategoria() {
-        return categoria;
-    }
+//    public Categoria getCategoria() {
+//        return categoria;
+//    }
 
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
+//    public void setCategoria(Categoria categoria) {
+//        this.categoria = categoria;
+//    }
 
     public Usuario getUsuarioCriador() {
         return usuarioCriador;
