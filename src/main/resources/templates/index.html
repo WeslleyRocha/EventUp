@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventUp - Encontre sua turma</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Estilo do Card de Evento */
+        .event-card {
+            transition: transform 0.2s;
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .event-card:hover { transform: translateY(-5px); }
+
+        .event-img {
+            height: 200px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #0d6efd;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .date-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: #ff3e6c; /* Cor vibrante */
+            color: white;
+            padding: 5px 10px;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .navbar-brand { font-weight: bold; letter-spacing: 1px; }
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 30px 30px;
+        }
+
+        /* Estilo do Header do Modal */
+        .modal-header-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar Mobile-First -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <i class="bi bi-rocket-takeoff-fill"></i> EventUp
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link active" href="#">Explorar</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Meus Grupos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Perfil</a></li>
+                <!-- Botão de Cadastro na Navbar também (Opcional) -->
+                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalCadastro">
+                        <i class="bi bi-person-plus"></i> Criar Conta
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section (Chamada para Ação) -->
+<header class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Nunca mais vá sozinho!</h1>
+        <p class="lead mb-4">Encontre eventos incríveis e conecte-se com quem também vai.</p>
+
+        <!-- Botão Principal de Cadastro -->
+        <button class="btn btn-light btn-lg rounded-pill fw-bold text-primary px-5 mb-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalCadastro">
+            <i class="bi bi-person-plus-fill me-2"></i> Criar minha conta grátis
+        </button>
+
+        <!-- Barra de Busca -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form class="d-flex bg-white p-2 rounded-pill shadow-sm">
+                    <input class="form-control border-0 rounded-pill ps-4" type="search" placeholder="Buscar show, teatro, tech..." aria-label="Search">
+                    <button class="btn btn-primary rounded-pill px-4 fw-bold" type="submit">Buscar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container mb-5">
+
+    <!-- Filtros Rápidos (Categorias) -->
+    <div class="d-flex gap-2 overflow-auto mb-4 pb-2" style="scrollbar-width: none;">
+        <button class="btn btn-dark rounded-pill px-4">Todos</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">🎵 Música</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">🎭 Cultura</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">💻 Tecnologia</button>
+        <button class="btn btn-outline-secondary rounded-pill px-4">⚽ Esportes</button>
+    </div>
+
+    <h4 class="mb-3 fw-bold text-secondary">Próximos Eventos</h4>
+
+    <!-- Grid de Eventos -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+        <!-- CARD DE EVENTO (Isso será repetido pelo Thymeleaf: th:each) -->
+        <!-- Exemplo Estático para Visualização -->
+        <div class="col">
+            <div class="card event-card h-100">
+                <div class="event-img-wrapper">
+                    <!-- Imagem do Evento -->
+                    <img src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=1000&auto=format&fit=crop" class="card-img-top event-img" alt="Show">
+
+                    <!-- Data em destaque -->
+                    <div class="date-badge shadow">
+                        <div class="fw-bold fs-5">15</div>
+                        <div class="small text-uppercase">Dez</div>
+                    </div>
+
+                    <!-- Categoria -->
+                    <span class="category-badge shadow-sm">🎵 Show</span>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-truncate">Festival de Rock Indie</h5>
+                    <p class="card-text text-muted small mb-2">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> Parque Ibirapuera, SP
+                    </p>
+                    <p class="card-text small">
+                        Junte-se ao grupo para curtir as melhores bandas indies da cena atual...
+                    </p>
+
+                    <!-- Informações Sociais -->
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                        <div class="d-flex align-items-center">
+                            <!-- Avatares de quem vai -->
+                            <div class="d-flex position-relative me-2">
+                                <img src="https://i.pravatar.cc/100?img=1" class="rounded-circle border border-white" width="30" height="30" style="margin-right: -10px;">
+                                <img src="https://i.pravatar.cc/100?img=5" class="rounded-circle border border-white" width="30" height="30" style="margin-right: -10px;">
+                                <img src="https://i.pravatar.cc/100?img=8" class="rounded-circle border border-white" width="30" height="30">
+                            </div>
+                            <small class="text-muted ms-2">+42 vão</small>
+                        </div>
+
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill">Gratuito</span>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-0 pt-0 pb-3">
+                    <a href="#" class="btn btn-outline-primary w-100 rounded-pill fw-bold">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Outro Card de Exemplo (Tecnologia) -->
+        <div class="col">
+            <div class="card event-card h-100">
+                <div class="event-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop" class="card-img-top event-img" alt="Tech">
+                    <div class="date-badge shadow">
+                        <div class="fw-bold fs-5">20</div>
+                        <div class="small text-uppercase">Dez</div>
+                    </div>
+                    <span class="category-badge shadow-sm">💻 Tech</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-truncate">Workshop de IA</h5>
+                    <p class="card-text text-muted small mb-2">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> SENAI - Vila Mariana
+                    </p>
+                    <p class="card-text small">
+                        Aprenda sobre Inteligência Artificial na prática com especialistas.
+                    </p>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                        <small class="text-muted"><i class="bi bi-people-fill"></i> 15 confirmados</small>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">R$ 50,00</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0 pb-3">
+                    <a href="#" class="btn btn-outline-primary w-100 rounded-pill fw-bold">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards Adicionais (Repetição dos exemplos para encher a tela) -->
+        <div class="col">
+            <div class="card event-card h-100">
+                <div class="event-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop" class="card-img-top event-img" alt="Tech">
+                    <div class="date-badge shadow">
+                        <div class="fw-bold fs-5">20</div>
+                        <div class="small text-uppercase">Dez</div>
+                    </div>
+                    <span class="category-badge shadow-sm">💻 Tech</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-truncate">Workshop de IA</h5>
+                    <p class="card-text text-muted small mb-2">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> SENAI - Vila Mariana
+                    </p>
+                    <p class="card-text small">
+                        Aprenda sobre Inteligência Artificial na prática com especialistas.
+                    </p>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                        <small class="text-muted"><i class="bi bi-people-fill"></i> 15 confirmados</small>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">R$ 50,00</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0 pb-3">
+                    <a href="#" class="btn btn-outline-primary w-100 rounded-pill fw-bold">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card event-card h-100">
+                <div class="event-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop" class="card-img-top event-img" alt="Tech">
+                    <div class="date-badge shadow">
+                        <div class="fw-bold fs-5">20</div>
+                        <div class="small text-uppercase">Dez</div>
+                    </div>
+                    <span class="category-badge shadow-sm">💻 Tech</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-truncate">Workshop de IA</h5>
+                    <p class="card-text text-muted small mb-2">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> SENAI - Vila Mariana
+                    </p>
+                    <p class="card-text small">
+                        Aprenda sobre Inteligência Artificial na prática com especialistas.
+                    </p>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                        <small class="text-muted"><i class="bi bi-people-fill"></i> 15 confirmados</small>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">R$ 50,00</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0 pb-3">
+                    <a href="#" class="btn btn-outline-primary w-100 rounded-pill fw-bold">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card event-card h-100">
+                <div class="event-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop" class="card-img-top event-img" alt="Tech">
+                    <div class="date-badge shadow">
+                        <div class="fw-bold fs-5">20</div>
+                        <div class="small text-uppercase">Dez</div>
+                    </div>
+                    <span class="category-badge shadow-sm">💻 Tech</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-truncate">Workshop de IA</h5>
+                    <p class="card-text text-muted small mb-2">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> SENAI - Vila Mariana
+                    </p>
+                    <p class="card-text small">
+                        Aprenda sobre Inteligência Artificial na prática com especialistas.
+                    </p>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                        <small class="text-muted"><i class="bi bi-people-fill"></i> 15 confirmados</small>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">R$ 50,00</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0 pb-3">
+                    <a href="#" class="btn btn-outline-primary w-100 rounded-pill fw-bold">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card event-card h-100">
+                <div class="event-img-wrapper">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1000&auto=format&fit=crop" class="card-img-top event-img" alt="Tech">
+                    <div class="date-badge shadow">
+                        <div class="fw-bold fs-5">20</div>
+                        <div class="small text-uppercase">Dez</div>
+                    </div>
+                    <span class="category-badge shadow-sm">💻 Tech</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-truncate">Workshop de IA</h5>
+                    <p class="card-text text-muted small mb-2">
+                        <i class="bi bi-geo-alt-fill text-danger"></i> SENAI - Vila Mariana
+                    </p>
+                    <p class="card-text small">
+                        Aprenda sobre Inteligência Artificial na prática com especialistas.
+                    </p>
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                        <small class="text-muted"><i class="bi bi-people-fill"></i> 15 confirmados</small>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill">R$ 50,00</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0 pb-3">
+                    <a href="#" class="btn btn-outline-primary w-100 rounded-pill fw-bold">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- AQUI COMEÇA O POP-UP (MODAL) DE CADASTRO -->
+<!-- ========================================== -->
+<div class="modal fade" id="modalCadastro" tabindex="-1" aria-labelledby="modalCadastroLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"> <!-- modal-lg = Grande | centered = Centro | scrollable = Barra de rolagem -->
+        <div class="modal-content">
+
+            <!-- Cabeçalho do Pop-up -->
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold" id="modalCadastroLabel">
+                    <i class="bi bi-person-plus-fill"></i> Criar Conta no EventUp
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Corpo do Pop-up (Onde vai o formulário) -->
+            <div class="modal-body p-4">
+
+                <form>
+                    <!-- Seção Pessoal -->
+                    <h6 class="text-secondary mb-3 border-bottom pb-2">Dados Pessoais</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="nome" class="form-label">Nome</label>
+                            <input type="text" class="form-control" id="nome" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sobrenome" class="form-label">Sobrenome</label>
+                            <input type="text" class="form-control" id="sobrenome" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dataNascimento" class="form-label">Data de Nascimento</label>
+                            <input type="date" class="form-control" id="dataNascimento" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="genero" class="form-label">Gênero</label>
+                            <select class="form-select" id="genero">
+                                <option selected disabled>Selecione...</option>
+                                <option value="Feminino">Feminino</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Seção Contato -->
+                    <h6 class="text-secondary mb-3 border-bottom pb-2">Contato e Acesso</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="senha" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="senha" required>
+                        </div>
+                        <div class="col-12">
+                            <label for="telefone" class="form-label">Telefone</label>
+                            <input type="tel" class="form-control" id="telefone">
+                        </div>
+                    </div>
+
+                    <!-- Seção Localização -->
+                    <h6 class="text-secondary mb-3 border-bottom pb-2">Localização</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-8">
+                            <label for="cidade" class="form-label">Cidade</label>
+                            <input type="text" class="form-control" id="cidade">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-select" id="estado">
+                                <option selected disabled>UF</option>
+                                <option value="SP">SP</option>
+                                <option value="RJ">RJ</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Seção Perfil -->
+                    <h6 class="text-secondary mb-3 border-bottom pb-2">Perfil</h6>
+                    <div class="mb-3">
+                        <label for="bio" class="form-label">Bio / Interesses</label>
+                        <textarea class="form-control" id="bio" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fotoPerfil" class="form-label">Foto</label>
+                        <input class="form-control" type="file" id="fotoPerfil">
+                    </div>
+                </form>
+
+            </div>
+
+            <!-- Rodapé do Pop-up (Botões) -->
+            <div class="modal-footer bg-light border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary fw-bold" style="background: #667eea; border: none;">Cadastrar-se</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid bg-dark text-light">
+    <div class="container">
+        <footer class="py-3 my-4">
+            <!-- Lista de Links Centralizada -->
+            <ul class="nav justify-content-center border-bottom border-secondary pb-3 mb-3">
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-white-50 hover-white">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-white-50 hover-white">Features</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-white-50 hover-white">Pricing</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-white-50 hover-white">FAQs</a></li>
+                <li class="nav-item"><a href="#" class="nav-link px-2 text-white-50 hover-white">About</a></li>
+            </ul>
+
+            <!-- Texto de Copyright -->
+            <p class="text-center text-white-50">© 2025 Company, Inc</p>
+        </footer>
+    </div>
+</div>
+
+<!-- CSS extra para o efeito de "passar o mouse" ficar branco brilhante -->
+<style>
+    .hover-white:hover {
+        color: white !important;
+    }
+</style>
+
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
