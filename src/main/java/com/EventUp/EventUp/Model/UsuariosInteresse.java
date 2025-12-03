@@ -1,15 +1,19 @@
 package com.EventUp.EventUp.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
 @Entity
 @Table (name = "UsuariosInteresse")
 public class UsuariosInteresse implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuarios_interesse")
+    private Long id_usuarios_interesse;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
@@ -19,19 +23,5 @@ public class UsuariosInteresse implements Serializable {
     @JoinColumn(name = "id_interesse", nullable = false)
     private Interesse Interesse;
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Interesse getInteresse() {
-        return Interesse;
-    }
-
-    public void setInteresse(Interesse interesse) {
-        Interesse = interesse;
-    }
 }
