@@ -16,7 +16,7 @@ public class Usuario implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
-    private Long id;
+    private Long id_usuario;
 
     @Column(name = "nome_completo", nullable = false)
     private String nome_completo;
@@ -52,12 +52,12 @@ public class Usuario implements Serializable {
     @Column (name = "data_criacao")
     private LocalDateTime data_criacao;
 
-    public Long getId() {
-        return id;
+    public Long getId_usuario() {
+        return id_usuario;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId_usuario(Long id) {
+        this.id_usuario = id_usuario;
     }
 
     public String getNome_completo() {

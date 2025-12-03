@@ -6,7 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Table(name = "Grupos_Evento")
+@Entity
+@Table(name = "GruposEvento")
 public class GruposEvento implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -18,7 +19,7 @@ public class GruposEvento implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "id_evento", nullable = false)
-    private Long id_evento;
+    private Evento evento;
 
     @Column(name = "nome_grupo")
     private String nome_grupo;
@@ -39,14 +40,6 @@ public class GruposEvento implements Serializable {
 
     public void setId_grupo(Long id_grupo) {
         this.id_grupo = id_grupo;
-    }
-
-    public Long getId_evento() {
-        return id_evento;
-    }
-
-    public void setId_evento(Long id_evento) {
-        this.id_evento = id_evento;
     }
 
     public String getNome_grupo() {

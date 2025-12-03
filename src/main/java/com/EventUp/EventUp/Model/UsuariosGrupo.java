@@ -24,7 +24,6 @@ public class UsuariosGrupo implements Serializable {
     @Column (name = "data_ingresso")
     private LocalDateTime data_ingresso;
 
-
     public Long getId_usuario() {
         return id_usuario;
     }

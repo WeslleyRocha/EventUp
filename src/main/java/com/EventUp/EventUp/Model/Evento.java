@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "eventos")
+@Table(name = "Eventos")
 public class Evento implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,22 +39,17 @@ public class Evento implements Serializable {
     @Column(name = "valor_ingresso")
     private Double valorIngresso;
 
-
-    //Parte da Rillary
     @ManyToOne
     @JoinColumn(name = "id_local", nullable = false)
     private Locais local;
 
-    //Ligação com CATEGORIA
     @ManyToOne
     @JoinColumn(name = "id_categoria", nullable = false)
     private Categoria categoria;
 
-
     @ManyToOne
     @JoinColumn(name = "id_usuario_criador", nullable = false)
     private Usuario usuarioCriador;
-
 
     public String getNomeEvento() {
         return nomeEvento;
