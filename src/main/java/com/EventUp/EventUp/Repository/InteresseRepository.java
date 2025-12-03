@@ -1,7 +1,8 @@
 package com.EventUp.EventUp.Repository;
 
 import com.EventUp.EventUp.Model.Interesse;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface InteresseRepository extends JpaRepository <Interesse, Long>{
+
+public interface InteresseRepository extends CrudRepository<Interesse, Long> {
 }
