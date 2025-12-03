@@ -45,10 +45,10 @@ public class Evento implements Serializable {
     @JoinColumn(name = "id_local", nullable = false)
     private Locais local;
 
-//    //Ligação com CATEGORIA
-//    @ManyToOne
-//    @JoinColumn(name = "id_categoria", nullable = false)
-//    private Categoria categoria;
+    //Ligação com CATEGORIA
+    @ManyToOne
+    @JoinColumn(name = "id_categoria", nullable = false)
+    private Categoria categoria;
 
 
     @ManyToOne
@@ -128,13 +128,13 @@ public class Evento implements Serializable {
         this.local = local;
     }
 
-//    public Categoria getCategoria() {
-//        return categoria;
-//    }
+    public Categoria getCategoria() {
+        return categoria;
+    }
 
-//    public void setCategoria(Categoria categoria) {
-//        this.categoria = categoria;
-//    }
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
 
     public Usuario getUsuarioCriador() {
         return usuarioCriador;
