@@ -2,54 +2,44 @@ package com.EventUp.EventUp.Controller;
 
 import com.EventUp.EventUp.Model.Usuario;
 import com.EventUp.EventUp.Repository.UsuarioRepository;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-
-@Controller
+@RestController
+@RequestMapping("/usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // LISTAR - GET /usuarios
-    @GetMapping("/usuarios")
-    public String listarUsuarios(Model model){
-        model.addAttribute("usuarios", usuarioRepository.findAll());
-        return "Usuario/lista"; // templates/Usuario/lista.html
-    }
+    @PostMapping
+    public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
 
-    // FORM NOVO - GET /usuarios/novo
-    @GetMapping("/usuarios/novo")
-    public String novoUsuario(Model model){
-        model.addAttribute("usuario", new Usuario());
-        return "Usuario/form"; // templates/Usuario/form.html
-    }
+        logger.info("Recebida requisição para criar usuário: {}", usuario);
 
-    // SALVAR (CREATE/UPDATE) - POST /usuarios/salvar
-    @PostMapping("/usuarios/salvar")
-    public String salvarUsuario(@ModelAttribute Usuario usuario){
-        usuarioRepository.save(usuario);
-        return "redirect:/usuarios";
-    }
+        try {
+            Usuario novoUsuario = usuarioRepository.save(usuario);
+            logger.info("Usuário criado com sucesso com ID: {}", novoUsuario.getId_usuario());
 
-    // FORM EDITAR - GET /usuarios/editar/{id}
-    @GetMapping("/usuarios/editar/{id_usuario}")
-    public String editarUsuario(@PathVariable("id_usuario") Long id, Model model){
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário inválido: " + id));
+            novoUsuario.setSenha(null);
+            return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
 
-        model.addAttribute("usuario", usuario);
-        return "Usuario/form";
-    }
+        } catch (Exception e) {
 
-    // EXCLUIR - GET /usuarios/excluir/{id}
-    @GetMapping("/usuarios/excluir/{id_usuario}")
-    public String excluirUsuario(@PathVariable("id_usuario") Long id){
-        usuarioRepository.deleteById(id);
-        return "redirect:/usuarios";
+            logger.error("Erro ao salvar o usuário no banco de dados.", e);
+
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
