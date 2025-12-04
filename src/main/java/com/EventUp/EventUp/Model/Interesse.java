@@ -1,7 +1,6 @@
 package com.EventUp.EventUp.Model;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 
 @Entity
