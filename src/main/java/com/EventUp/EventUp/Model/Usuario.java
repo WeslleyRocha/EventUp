@@ -18,8 +18,11 @@ public class Usuario implements Serializable {
     @Column(name = "id_usuario")
     private Long id_usuario;
 
-    @Column(name = "nome_completo", nullable = false)
-    private String nome_completo;
+    @Column(name = "nome", nullable = false)
+    private String nome;
+
+    @Column(name = "sobrenome", nullable = false)
+    private String sobrenome;
 
     @Column(name = "data_nascimento", nullable = false)
     private Date data_nascimento;
@@ -52,20 +55,28 @@ public class Usuario implements Serializable {
     @Column (name = "data_criacao")
     private LocalDateTime data_criacao;
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getSobrenome() {
+        return sobrenome;
+    }
+
+    public void setSobrenome(String sobrenome) {
+        this.sobrenome = sobrenome;
+    }
+
     public Long getId_usuario() {
         return id_usuario;
     }
 
     public void setId_usuario(Long id) {
         this.id_usuario = id_usuario;
-    }
-
-    public String getNome_completo() {
-        return nome_completo;
-    }
-
-    public void setNome_completo(String nome_completo) {
-        this.nome_completo = nome_completo;
     }
 
     public Date getData_nascimento() {
