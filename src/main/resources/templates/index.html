@@ -91,10 +91,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link active" href="#">Explorar</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Meus Grupos</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Perfil</a></li>
-                <!-- Botão de Cadastro na Navbar também (Opcional) -->
+<!--                <li class="nav-item"><a class="nav-link active" href="#">Explorar</a></li>-->
+<!--                <li class="nav-item"><a class="nav-link" href="#">Meus Grupos</a></li>-->
+<!--                <li class="nav-item"><a class="nav-link" href="#">Perfil</a></li>-->
+
+                <!-- Botão Login -->
+                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalLogin">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </button>
+                </li>
+
+                <!-- Botão Criar Conta -->
                 <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
                     <button class="btn btn-outline-light btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalCadastro">
                         <i class="bi bi-person-plus"></i> Criar Conta
@@ -130,7 +138,7 @@
 
 <div class="container mb-5">
 
-    <!-- Filtros Rápidos (Categorias) -->
+    <!-- Filtros Categorias -->
     <div class="d-flex gap-2 overflow-auto mb-4 pb-2" style="scrollbar-width: none;">
         <button class="btn btn-dark rounded-pill px-4">Todos</button>
         <button class="btn btn-outline-secondary rounded-pill px-4">🎵 Música</button>
@@ -143,25 +151,17 @@
 
     <!-- Grid de Eventos -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-
-        <!-- CARD DE EVENTO (Isso será repetido pelo Thymeleaf: th:each) -->
         <!-- Exemplo Estático para Visualização -->
         <div class="col">
             <div class="card event-card h-100">
                 <div class="event-img-wrapper">
-                    <!-- Imagem do Evento -->
                     <img src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=1000&auto=format&fit=crop" class="card-img-top event-img" alt="Show">
-
-                    <!-- Data em destaque -->
                     <div class="date-badge shadow">
                         <div class="fw-bold fs-5">15</div>
                         <div class="small text-uppercase">Dez</div>
                     </div>
-
-                    <!-- Categoria -->
                     <span class="category-badge shadow-sm">🎵 Show</span>
                 </div>
-
                 <div class="card-body">
                     <h5 class="card-title fw-bold text-truncate">Festival de Rock Indie</h5>
                     <p class="card-text text-muted small mb-2">
@@ -170,8 +170,6 @@
                     <p class="card-text small">
                         Junte-se ao grupo para curtir as melhores bandas indies da cena atual...
                     </p>
-
-                    <!-- Informações Sociais -->
                     <div class="d-flex align-items-center justify-content-between mt-3">
                         <div class="d-flex align-items-center">
                             <!-- Avatares de quem vai -->
@@ -353,7 +351,7 @@
             <!-- Cabeçalho do Pop-up -->
             <div class="modal-header modal-header-custom">
                 <h5 class="modal-title fw-bold" id="modalCadastroLabel">
-                    <i class="bi bi-person-plus-fill"></i> Criar Conta no EventUp
+                    <i class="bi bi-person-plus-fill"></i> Criar Conta
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -416,8 +414,33 @@
                             <label for="estado" class="form-label">Estado</label>
                             <select class="form-select" id="estado">
                                 <option selected disabled>UF</option>
-                                <option value="SP">SP</option>
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
                                 <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SE">SE</option>
+                                <option value="SP">SP</option>
+                                <option value="TO">TO</option>
                             </select>
                         </div>
                     </div>
@@ -446,7 +469,46 @@
     </div>
 </div>
 
-<div class="container-fluid bg-dark text-light">
+<!-- ========================================== -->
+<!-- POP-UP (MODAL) DE LOGIN  -->
+<!-- ========================================== -->
+<div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="modalLoginLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-custom">
+                <h5 class="modal-title fw-bold" id="modalLoginLabel">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">E-mail</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            <input type="email" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                            <input type="password" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary fw-bold" style="background: #667eea; border: none;">Entrar</button>
+                        <a href="#" class="btn btn-link text-secondary text-decoration-none text-center btn-sm">Esqueci minha senha</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rodapé -->
+<div class="container-fluid bg-dark text-light mt-5">
     <div class="container">
         <footer class="py-3 my-4">
             <!-- Lista de Links Centralizada -->
@@ -474,6 +536,24 @@
 
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script Manual para garantir que os Modais funcionem -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Assegura que o Bootstrap carregou e os botões funcionam via JS se o HTML falhar
+        var modalCadastro = new bootstrap.Modal(document.getElementById('modalCadastro'));
+        var modalLogin = new bootstrap.Modal(document.getElementById('modalLogin'));
+
+        var btnHero = document.getElementById('btnCriarContaHero');
+        var btnNav = document.getElementById('btnCriarContaNav');
+
+        if(btnHero) btnHero.addEventListener('click', function () { modalCadastro.show(); });
+        if(btnNav) btnNav.addEventListener('click', function () { modalCadastro.show(); });
+    });
+
+
+</script>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
