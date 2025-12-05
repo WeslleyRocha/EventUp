@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top" th:fragment="navbar-principal">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+            <i class="bi bi-rocket-takeoff-fill me-2"></i> EventUp
+        </a>
+
+        <div class="d-flex align-items-center ms-auto gap-3">
+
+            <div id="navLoggedOut" class="d-flex align-items-center gap-2"
+                 th:if="${session.usuarioLogado == null}">
+
+                <button class="btn btn-outline-light btn-sm rounded-pill px-3"
+                        data-bs-toggle="modal" data-bs-target="#modalCadastro">
+                    <i class="bi bi-person-plus"></i> Criar Conta
+                </button>
+
+                <button class="btn btn-outline-light btn-sm rounded-pill px-3"
+                        data-bs-toggle="modal" data-bs-target="#modalLogin">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </button>
+            </div>
+
+            <div id="navLoggedIn" class="d-flex align-items-center gap-3"
+                 th:if="${session.usuarioLogado != null}">
+
+                <span class="text-white d-none d-md-block">
+                    Olá, <strong th:text="${session.usuarioLogado.nome}">Usuário</strong>!
+                </span>
+
+                <div class="dropdown">
+                    <button class="btn btn-outline-light btn-sm rounded-pill px-3 dropdown-toggle"
+                            data-bs-toggle="dropdown">
+                        <i class="bi bi-person-check-fill me-1"></i> <span class="d-sm-none">Perfil</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Meus Dados</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a href="/logout" class="dropdown-item text-danger">
+                                <i class="bi bi-box-arrow-right me-2"></i> Sair
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <button class="btn text-white border-0 p-1" type="button"
+                    data-bs-toggle="offcanvas" data-bs-target="#menuLateral">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+
+        </div>
+    </div>
+</nav>
+
+
+<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="menuLateral" th:fragment="menu-lateral">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalEvento">
+                <i class="bi bi-calendar-plus me-1"></i> Criar evento
+            </button>
+            <a href="#" class="btn btn-outline-light">
+                <i class="bi bi-card-list me-1"></i> Listar eventos
+            </a>
+        </div>
+
+        <hr class="border-secondary my-4">
+
+        <ul class="list-unstyled">
+            <li class="mb-2"><a href="#" class="link-light text-decoration-none">Perfil</a></li>
+            <li class="mb-2"><a href="#" class="link-light text-decoration-none">Meus Grupos</a></li>
+            <li class="mb-2"><a href="#" class="link-light text-decoration-none">Configurações</a></li>
+
+            <li class="mt-4 pt-4 border-top border-secondary" th:if="${session.usuarioLogado != null}">
+                <a href="/logout" class="text-danger text-decoration-none fw-bold">
+                    <i class="bi bi-box-arrow-right me-2"></i> Sair da Conta
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

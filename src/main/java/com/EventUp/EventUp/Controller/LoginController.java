@@ -39,7 +39,7 @@ public class LoginController {
             return "redirect:/";
         } else {
             model.addAttribute("erro", "E-mail ou senha inválidos!");
-            return "index";
+            return "index2";
         }
     }
 

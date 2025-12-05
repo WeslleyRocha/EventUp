@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<body>
+
+<div th:fragment="modal-evento">
+    <div class="modal fade" id="modalEvento" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title fw-bold text-white">
+                        <i class="bi bi-calendar-plus-fill me-2"></i> Criar Novo Evento
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <form action="/eventos/criar" method="post">
+
+                        <div class="mb-3">
+                            <label for="nomeEvento" class="form-label fw-bold">Nome do Evento</label>
+                            <input type="text" class="form-control" id="nomeEvento" name="nome" placeholder="Ex: Workshop de Java" required>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="categoriaEvento" class="form-label">Categoria</label>
+                                <select class="form-select" id="categoriaEvento" name="categoria">
+                                    <option selected disabled>Selecione...</option>
+                                    <option value="Musica">🎵 Música</option>
+                                    <option value="Tecnologia">💻 Tecnologia</option>
+                                    <option value="Cultura">🎭 Cultura</option>
+                                    <option value="Esportes">⚽ Esportes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dataEvento" class="form-label">Data e Hora</label>
+                                <input type="datetime-local" class="form-control" id="dataEvento" name="dataHora" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="localEvento" class="form-label">Local / Endereço</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                <input type="text" class="form-control" id="localEvento" name="local" placeholder="Ex: Av. Paulista, 1000 ou Online">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descricaoEvento" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricaoEvento" name="descricao" rows="3" placeholder="Conte mais sobre o evento..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="imgEvento" class="form-label">URL da Imagem (Capa)</label>
+                            <input type="url" class="form-control" id="imgEvento" name="urlImagem" placeholder="http://...">
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold" style="background: #667eea; border: none;">
+                                Publicar Evento
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
