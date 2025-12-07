@@ -7,29 +7,45 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
     <link rel="stylesheet" th:href="@{/CSS/main.css}">
+
+    <style>
+        /* Ajuste para esconder a barra de rolagem visualmente, mas permitir o scroll */
+        .scroll-horizontal {
+            overflow-x: auto;
+            white-space: nowrap;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .scroll-horizontal::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+    </style>
 </head>
 <body>
 
 <div th:replace="~{Layout/navbar :: navbar-principal}"></div>
 <div th:replace="~{Layout/navbar :: menu-lateral}"></div>
 
-<header class="hero-section text-center">
+<header class="hero-section text-center py-5 bg-light mb-4">
     <div class="container">
-        <h1 class="display-4 fw-bold">Nunca mais vá sozinho!</h1>
-        <p class="lead mb-4">Encontre eventos incríveis e conecte-se com quem também vai.</p>
+        <h1 class="display-4 fw-bold mb-3">Nunca mais vá sozinho!</h1>
+        <p class="lead mb-4 text-muted">Encontre eventos incríveis e conecte-se com quem também vai.</p>
 
-        <button class="btn btn-light btn-lg rounded-pill fw-bold text-primary px-5 mb-4 shadow-sm"
+        <button class="btn btn-primary btn-lg rounded-pill fw-bold px-5 mb-4 shadow-sm"
                 data-bs-toggle="modal" data-bs-target="#modalCadastro">
             <i class="bi bi-person-plus-fill me-2"></i> Criar minha conta grátis
         </button>
 
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <form class="d-flex bg-white p-2 rounded-pill shadow-sm">
-                    <input class="form-control border-0 rounded-pill ps-4" type="search" placeholder="Buscar show, teatro, tech..." aria-label="Search">
-                    <button class="btn btn-primary rounded-pill px-4 fw-bold" type="submit">Buscar</button>
+                <form action="/" method="get" class="d-flex bg-white p-2 rounded-pill shadow-sm border">
+                    <input name="busca"
+                           class="form-control border-0 rounded-pill ps-4"
+                           type="search"
+                           placeholder="Buscar show, teatro, tech..."
+                           aria-label="Search"
+                           th:value="${param.busca}"> <button class="btn btn-primary rounded-pill px-4 fw-bold" type="submit">Buscar</button>
                 </form>
             </div>
         </div>
@@ -37,29 +53,93 @@
 </header>
 
 <div class="container mb-5">
-    <div class="d-flex gap-2 overflow-auto mb-4 pb-2" style="scrollbar-width: none;">
-        <button class="btn btn-dark rounded-pill px-4">Todos</button>
-        <button class="btn btn-outline-secondary rounded-pill px-4">🎵 Música</button>
-        <button class="btn btn-outline-secondary rounded-pill px-4">💻 Tecnologia</button>
+
+    <div class="d-flex gap-2 align-items-center mb-4 pb-3 overflow-x-auto flex-nowrap"
+         style="scrollbar-width: thin;">
+        <a th:href="@{/}"
+           class="btn rounded-pill px-4 fw-bold flex-shrink-0"
+           th:classappend="${param.categoriaId == null} ? 'btn-dark' : 'btn-light border'">
+            Todos
+        </a>
+
+        <a th:each="cat : ${categorias}"
+           th:href="@{/(categoriaId=${cat.id})}"
+           class="btn rounded-pill px-4 d-flex align-items-center gap-2 flex-shrink-0"
+           th:classappend="${param.categoriaId != null and param.categoriaId[0] == cat.id.toString()} ? 'btn-dark' : 'btn-light border'">
+            <span th:text="${cat.nomeCategoria}"></span>
+        </a>
     </div>
 
     <h4 class="mb-3 fw-bold text-secondary">Próximos Eventos</h4>
 
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        <div class="col">
-            <div class="card event-card h-100">
-                <div class="event-img-wrapper position-relative">
-                    <img src="https://placehold.co/600x400/purple/white?text=Evento+Teste" class="card-img-top event-img" alt="Evento">
-                    <span class="category-badge shadow-sm">💻 Tech</span>
+
+        <div class="col" th:each="ev : ${eventos}">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
+
+                <div class="position-relative" style="height: 200px; overflow: hidden; border-radius: 0.5rem 0.5rem 0 0;">
+
+                    <img th:src="${ev.urlImagemDestaque != null && !ev.urlImagemDestaque.isEmpty() ? ev.urlImagemDestaque : 'https://placehold.co/600x400/purple/white?text=' + ev.nomeEvento}"
+                         class="card-img-top w-100 h-100"
+                         style="object-fit: cover;"
+                         alt="Imagem do Evento">
+
+                    <div class="position-absolute top-0 start-0 m-3 bg-danger text-white rounded p-2 text-center shadow-sm lh-1"
+                         style="min-width: 50px;"
+                         th:if="${ev.dataHoraInicio != null}">
+                        <span class="d-block fw-bold h4 mb-0"
+                              th:text="${#temporals.format(ev.dataHoraInicio, 'dd')}"></span>
+                        <span class="d-block small text-uppercase" style="font-size: 0.7rem;"
+                              th:text="${#temporals.format(ev.dataHoraInicio, 'MMM')}"></span>
+                    </div>
+
+                    <span class="position-absolute top-0 end-0 m-3 badge bg-light text-dark shadow-sm rounded-pill px-3 py-2 fw-bold opacity-90">
+                           <i class="bi bi-tag-fill me-1 text-primary"></i>
+                           <span th:text="${ev.categoria.nomeCategoria}"></span>
+                    </span>
                 </div>
+
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Evento Teste Java</h5>
-                    <p class="card-text text-muted small"><i class="bi bi-geo-alt-fill text-danger"></i> Online</p>
+
+                    <h5 class="card-title fw-bold mb-2" th:text="${ev.nomeEvento}">Título</h5>
+
+                    <p class="card-text text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                        <span th:text="${ev.local != null ? ev.local.nomeLocal : 'Local a definir'}"></span>
+                    </p>
+
+                    <p class="card-text text-secondary small mb-4"
+                       th:text="${ev.descricaoDetalhada != null ? #strings.abbreviate(ev.descricaoDetalhada, 70) : ''}">
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="small text-muted fw-bold">
+                            <i class="bi bi-people-fill me-1"></i> +15 vão
+                        </div>
+
+                        <span class="badge rounded-pill px-3 py-2 fw-bold"
+                              th:classappend="${ev.gratuito} ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'"
+                              th:text="${ev.gratuito ? 'Gratuito' : 'R$ ' + #numbers.formatDecimal(ev.valorIngresso, 1, 'POINT', 2, 'COMMA')}">
+                        </span>
+                    </div>
                 </div>
-                <div class="card-footer bg-white border-0 pb-3">
-                    <button class="btn btn-outline-primary w-100 rounded-pill">Ver Detalhes</button>
+
+                <div class="card-footer bg-white border-0 pb-4 pt-0">
+                    <a th:href="@{/eventos/{id}(id=${ev.id})}"
+                       class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2">
+                        Ver Detalhes
+                    </a>
                 </div>
             </div>
+        </div>
+
+        <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(eventos)}">
+            <div class="text-muted mb-3 opacity-50">
+                <i class="bi bi-search display-1"></i>
+            </div>
+            <h3 class="fw-bold text-secondary">Nenhum evento encontrado :(</h3>
+            <p class="text-muted">Tente mudar o filtro ou buscar por outro termo.</p>
+            <a th:href="@{/}" class="btn btn-primary rounded-pill px-4 mt-2">Limpar filtros</a>
         </div>
     </div>
 </div>
