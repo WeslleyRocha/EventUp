@@ -26,11 +26,11 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
 
-        logger.info("Recebida requisição para criar usuário: {}", usuario);
+        logger.info("Recebida requisição para criar usuário: " + usuario);
 
         try {
             Usuario novoUsuario = usuarioRepository.save(usuario);
-            logger.info("Usuário criado com sucesso com ID: {}", novoUsuario.getId_usuario());
+            logger.info("Usuário criado com sucesso com ID: " + novoUsuario.getId_usuario());
 
             novoUsuario.setSenha(null);
             return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
