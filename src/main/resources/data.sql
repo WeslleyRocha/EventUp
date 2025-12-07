@@ -1,0 +1,23 @@
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (01, 'Música');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (02, 'Tecnologia');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (03, 'Cultura');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (04, 'Esportes');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (05, 'Online');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (06, 'Educação');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (07, 'Gastronomia');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (08, 'Viagens');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (09, 'Games');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (10, 'Arte');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (11, 'Pets');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (12, 'Negócios');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (13, 'Inovação');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (14, 'Saúde');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (15, 'Decoração');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (16, 'Fotografia');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (17, 'Outros');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (18, 'Meio Ambiente');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (19, 'Automóveis');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (20, 'Bem-estar');
+INSERT IGNORE INTO categorias (id_categoria, nome_categoria) VALUES (21, 'Filmes e Séries');
+
+INSERT IGNORE INTO Usuario (id_usuario, nome, sobrenome, data_nascimento, email, senha, telefone, data_criacao) VALUES (1, 'UsuarioTest', 'test', '1990-01-01', 'teste@teste.com', '123456', '(99) 99999-9999', CURRENT_TIMESTAMP);
