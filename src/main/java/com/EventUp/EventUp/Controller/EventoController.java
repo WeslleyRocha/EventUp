@@ -9,17 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
+@Controller // @Controller permite retornar HTML
 @RequestMapping("/eventos")
 public class EventoController {
 
@@ -28,7 +24,9 @@ public class EventoController {
     @Autowired
     private EventoRepository eventoRepository;
 
+    // API PARA CRIAR EVENTO
     @PostMapping
+    @ResponseBody // Garante que retorne JSON para o JavaScript do modal
     public ResponseEntity<Evento> criarEvento (@RequestBody Evento evento, HttpSession session){
 
         logger.info("Recebida requisição para criar evento:" + evento);
@@ -43,7 +41,7 @@ public class EventoController {
         try {
             evento.setUsuarioCriador(usuarioLogado);
             Evento novoEvento = eventoRepository.save(evento);
-            logger.info("Evento" + novoEvento.getNomeEvento() + " criado com sucesso pelo usuário ID:" + usuarioLogado.getId_usuario());
+            logger.info("Evento " + novoEvento.getNomeEvento() + " criado com sucesso.");
 
             return new ResponseEntity<>(novoEvento, HttpStatus.CREATED);
 
@@ -53,6 +51,7 @@ public class EventoController {
         }
     }
 
+    // TELA DE DETALHES DO EVENTO
     @GetMapping("/{id}")
     public String detalhesEvento(@PathVariable("id") Long id, Model model) {
 
@@ -64,6 +63,7 @@ public class EventoController {
 
         model.addAttribute("evento", eventoOpt.get());
 
-        return "detalhes-evento";
+
+        return "Evento/detalhes-evento";
     }
 }
