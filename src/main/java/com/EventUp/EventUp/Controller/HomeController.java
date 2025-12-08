@@ -3,7 +3,7 @@ package com.EventUp.EventUp.Controller;
 import com.EventUp.EventUp.Repository.CategoriaRepository;
 import com.EventUp.EventUp.Repository.EventoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller; // Importante ser apenas @Controller
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

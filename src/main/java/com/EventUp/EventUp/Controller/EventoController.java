@@ -9,13 +9,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-@Controller //@Controller para poder carregar páginas HTML
+@RestController
 @RequestMapping("/eventos")
 public class EventoController {
 
@@ -24,7 +28,6 @@ public class EventoController {
     @Autowired
     private EventoRepository eventoRepository;
 
-    // --- MÉTODO 1: API PARA CRIAR EVENTO ---
     @PostMapping
     public ResponseEntity<Evento> criarEvento (@RequestBody Evento evento, HttpSession session){
 
@@ -50,23 +53,17 @@ public class EventoController {
         }
     }
 
-
-    // --- MÉTODO 2: PÁGINA DE DETALHES (HTML) ---
     @GetMapping("/{id}")
     public String detalhesEvento(@PathVariable("id") Long id, Model model) {
 
-        // 1. Busca o evento no banco pelo ID
         Optional<Evento> eventoOpt = eventoRepository.findById(id);
 
-        // 2. Se não achar (ex: ID 999), volta para a home
         if (eventoOpt.isEmpty()) {
             return "redirect:/";
         }
 
-        // 3. Se achar, manda o evento para a view
         model.addAttribute("evento", eventoOpt.get());
 
-        return "detalhes-evento"; // Vai abrir o arquivo detalhes-evento.html
+        return "detalhes-evento";
     }
-
 }
