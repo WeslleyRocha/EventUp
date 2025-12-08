@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@Controller // @Controller permite retornar HTML
+@Controller
 @RequestMapping("/eventos")
 public class EventoController {
 
@@ -24,13 +24,10 @@ public class EventoController {
     @Autowired
     private EventoRepository eventoRepository;
 
-    // API PARA CRIAR EVENTO
     @PostMapping
-    @ResponseBody // Garante que retorne JSON para o JavaScript do modal
-    public ResponseEntity<Evento> criarEvento (@RequestBody Evento evento, HttpSession session){
-
+    @ResponseBody
+    public ResponseEntity<Evento> criarEvento(@RequestBody Evento evento, HttpSession session) {
         logger.info("Recebida requisição para criar evento:" + evento);
-
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
 
         if (usuarioLogado == null) {
@@ -41,29 +38,29 @@ public class EventoController {
         try {
             evento.setUsuarioCriador(usuarioLogado);
             Evento novoEvento = eventoRepository.save(evento);
-            logger.info("Evento " + novoEvento.getNomeEvento() + " criado com sucesso.");
-
+            logger.info("Evento " + novoEvento.getNomeEvento() + " criado com sucesso pelo usuário ID: " + usuarioLogado.getId_usuario());
             return new ResponseEntity<>(novoEvento, HttpStatus.CREATED);
-
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Erro ao salvar o evento no banco de dados.", e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // TELA DE DETALHES DO EVENTO
     @GetMapping("/{id}")
-    public String detalhesEvento(@PathVariable("id") Long id, Model model) {
-
+    public String detalhesEventoPagina(@PathVariable("id") Long id, Model model) {
         Optional<Evento> eventoOpt = eventoRepository.findById(id);
-
         if (eventoOpt.isEmpty()) {
             return "redirect:/";
         }
-
         model.addAttribute("evento", eventoOpt.get());
+        return "Evento/detalhes-evento"; 
+    }
 
-
-        return "Evento/detalhes-evento";
+    @GetMapping("/api/{id}")
+    @ResponseBody
+    public ResponseEntity<Evento> getEventoDados(@PathVariable("id") Long id) {
+        Optional<Evento> eventoOpt = eventoRepository.findById(id);
+        return eventoOpt.map(evento -> new ResponseEntity<>(evento, HttpStatus.OK))
+                      .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

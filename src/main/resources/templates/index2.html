@@ -125,9 +125,7 @@
 
                 <div class="card-footer bg-white border-0 pb-4 pt-0 d-flex gap-2">
 
-                    <!-- LÓGICA CONDICIONAL PARA O BOTÃO -->
                     <th:block th:if="${#sets.contains(eventosInteresseIds, ev.id)}">
-                        <!-- Botão verde pastel -->
                         <button type="button"
                                 class="btn bg-success-subtle text-success w-100 rounded-pill fw-bold shadow-sm btn-eu-vou"
                                 th:attr="data-evento-id=${ev.id}">
@@ -136,7 +134,6 @@
                     </th:block>
 
                     <th:block th:unless="${#sets.contains(eventosInteresseIds, ev.id)}">
-                        <!-- Botão roxo original -->
                         <button type="button"
                                 class="btn text-white w-100 rounded-pill fw-bold shadow-sm btn-quero-ir"
                                 th:attr="data-evento-id=${ev.id}"
@@ -145,10 +142,11 @@
                         </button>
                     </th:block>
 
-                    <a th:href="@{/eventos/{id}(id=${ev.id})}"
-                       class="btn btn-outline-secondary w-100 rounded-pill fw-bold">
+                    <button type="button"
+                       class="btn btn-outline-secondary w-100 rounded-pill fw-bold btn-detalhes"
+                       th:attr="data-evento-id=${ev.id}">
                         Detalhes
-                    </a>
+                    </button>
 
                 </div>
             </div>
@@ -165,32 +163,165 @@
     </div>
 </div>
 
+<!-- INCLUSÃO DE TODOS OS MODAIS -->
 <div th:replace="~{Usuario/criar_cadastro-modal :: modal-cadastro}"></div>
 <div th:replace="~{Usuario/login-modal :: modal-login}"></div>
-<div th:replace="~{Evento/criar_evento-modal :: modal-evento}"></div>
-<div th:replace="~{Layout/footer :: rodape-padrao}"></div>
 <div th:replace="~{Usuario/meus-dados-modal :: modal-meus-dados}"></div>
-
+<div th:replace="~{Evento/criar_evento-modal :: modal-evento}"></div>
+<div th:replace="~{Evento/detalhes-evento :: modal-detalhes-evento}"></div>
+<div th:replace="~{Layout/footer :: rodape-padrao}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/JavaScript/app.js}"></script>
 
-<!-- SCRIPT PARA O BOTÃO "QUERO IR" e "EU VOU" -->
+<!-- SCRIPTS PARA OS BOTÕES E MODAIS -->
 <script th:inline="javascript">
 /*<![CDATA[*/
+
+function formatarData(dataString) {
+    if (!dataString) return 'Não informada';
+    return new Date(dataString).toLocaleString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // LÓGICA PARA O MODAL DE CADASTRO DE USUÁRIO
+    const formCadastro = document.getElementById('formCadastro');
+    const btnCadastrar = document.getElementById('btnCadastrar');
+    if(formCadastro && btnCadastrar) {
+        const modalCadastro = new bootstrap.Modal(document.getElementById('modalCadastro'));
+        btnCadastrar.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (!formCadastro.checkValidity()) {
+                formCadastro.reportValidity();
+                return;
+            }
+            const usuario = {
+                nome_completo: `${document.getElementById('nome').value} ${document.getElementById('sobrenome').value}`.trim(),
+                data_nascimento: document.getElementById('dataNascimento').value,
+                genero: document.getElementById('genero').value,
+                email: document.getElementById('email').value,
+                senha: document.getElementById('senha').value,
+                telefone: document.getElementById('telefone').value,
+                cidade: document.getElementById('cidade').value,
+                estado: document.getElementById('estado').value,
+                bio: document.getElementById('bio').value
+            };
+            fetch('/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario),
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                return response.text().then(text => { throw new Error('Falha ao cadastrar: ' + text) });
+            })
+            .then(data => {
+                alert('Cadastro realizado com sucesso!');
+                modalCadastro.hide();
+                formCadastro.reset();
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+        });
+    }
+
+    // LÓGICA PARA O MODAL DE DETALHES
+    const detalhesModal = new bootstrap.Modal(document.getElementById('modalDetalhesEvento'));
+    document.querySelectorAll('.btn-detalhes').forEach(button => {
+        button.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            document.getElementById('detalhes-nomeEvento').textContent = 'Carregando...';
+            detalhesModal.show();
+            fetch('/eventos/api/' + eventoId)
+                .then(response => {
+                    if (!response.ok) throw new Error('Evento não encontrado.');
+                    return response.json();
+                })
+                .then(evento => {
+                    document.getElementById('detalhes-nomeEvento').textContent = evento.nomeEvento;
+                    document.getElementById('detalhes-urlImagemDestaque').src = evento.urlImagemDestaque || 'https://placehold.co/600x400/purple/white?text=Evento';
+                    document.getElementById('detalhes-descricaoDetalhada').textContent = evento.descricaoDetalhada || 'Nenhuma descrição fornecida.';
+                    document.getElementById('detalhes-dataHoraInicio').textContent = formatarData(evento.dataHoraInicio);
+                    document.getElementById('detalhes-categoria').textContent = evento.categoria.nomeCategoria;
+                    document.getElementById('detalhes-ingresso').textContent = evento.gratuito ? 'Gratuito' : `R$ ${evento.valorIngresso.toFixed(2).replace('.', ',')}`;
+                    const blocoCriador = document.getElementById('detalhes-bloco-criador');
+                    if (evento.usuarioCriador && evento.usuarioCriador.nome_completo) {
+                        document.getElementById('detalhes-usuarioCriador').textContent = evento.usuarioCriador.nome_completo;
+                        blocoCriador.style.display = 'flex';
+                    } else {
+                        blocoCriador.style.display = 'none';
+                    }
+                    const blocoLocal = document.getElementById('detalhes-bloco-local');
+                    const blocoLink = document.getElementById('detalhes-bloco-link');
+                    if (evento.evento_online) {
+                        blocoLocal.style.display = 'none';
+                        blocoLink.style.display = 'flex';
+                        document.getElementById('detalhes-link_evento_online').href = evento.link_evento_online;
+                    } else {
+                        blocoLocal.style.display = 'flex';
+                        blocoLink.style.display = 'none';
+                        document.getElementById('detalhes-local_evento').textContent = evento.local_evento || 'A definir';
+                    }
+                    const blocoDataFim = document.getElementById('detalhes-bloco-dataFim');
+                    if (evento.dataHoraFim) {
+                        document.getElementById('detalhes-dataHoraFim').textContent = formatarData(evento.dataHoraFim);
+                        blocoDataFim.classList.remove('d-none');
+                    } else {
+                        blocoDataFim.classList.add('d-none');
+                    }
+                    const blocoIdade = document.getElementById('detalhes-bloco-idade');
+                    if (evento.restricaoIdade && evento.restricaoIdade > 0) {
+                        document.getElementById('detalhes-restricaoIdade').textContent = evento.restricaoIdade;
+                        blocoIdade.style.display = 'flex';
+                    } else {
+                        blocoIdade.style.display = 'none';
+                    }
+                    const accordionEndereco = document.getElementById('detalhes-accordion-endereco');
+                    if(!evento.evento_online && evento.endereco) {
+                        document.getElementById('detalhes-endereco-completo').textContent = `${evento.endereco}, ${evento.numero} - CEP: ${evento.cep}`;
+                        accordionEndereco.style.display = 'block';
+                    } else {
+                        accordionEndereco.style.display = 'none';
+                    }
+                    const infoEstacionamento = document.getElementById('detalhes-info_estacionamento');
+                    const blocoEstacionamento = document.getElementById('detalhes-bloco-estacionamento');
+                    const infoTransporte = document.getElementById('detalhes-info_transporte_publico');
+                    const blocoTransporte = document.getElementById('detalhes-bloco-transporte');
+                    const infoAcessibilidade = document.getElementById('detalhes-info_acessibilidade');
+                    const blocoAcessibilidade = document.getElementById('detalhes-bloco-acessibilidade');
+                    const accordionInfo = document.getElementById('detalhes-accordion-info');
+                    let hasInfo = false;
+                    if(evento.info_estacionamento) { infoEstacionamento.textContent = evento.info_estacionamento; blocoEstacionamento.style.display = 'block'; hasInfo = true; } else { blocoEstacionamento.style.display = 'none'; }
+                    if(evento.info_transporte_publico) { infoTransporte.textContent = evento.info_transporte_publico; blocoTransporte.style.display = 'block'; hasInfo = true; } else { blocoTransporte.style.display = 'none'; }
+                    if(evento.info_acessibilidade) { infoAcessibilidade.textContent = evento.info_acessibilidade; blocoAcessibilidade.style.display = 'block'; hasInfo = true; } else { blocoAcessibilidade.style.display = 'none'; }
+                    accordionInfo.style.display = hasInfo ? 'block' : 'none';
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar detalhes do evento:', error);
+                    alert(error.message);
+                    detalhesModal.hide();
+                });
+        });
+    });
+    
+    configurarBotoesInteresse();
+});
+
+
+// LÓGICA PARA OS BOTÕES DE INTERESSE
 function configurarBotoesInteresse() {
-    // Remove listeners antigos para evitar duplicação
     document.querySelectorAll('.btn-quero-ir, .btn-eu-vou').forEach(b => {
         const novoBotao = b.cloneNode(true);
         b.parentNode.replaceChild(novoBotao, b);
     });
 
-    // Configura botões "Quero ir!"
     document.querySelectorAll('.btn-quero-ir').forEach(botao => {
         botao.addEventListener('click', function() {
             const eventoId = this.getAttribute('data-evento-id');
-            const botaoClicado = this;
-
             fetch('/quero-ir', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -199,25 +330,19 @@ function configurarBotoesInteresse() {
             .then(handleResponse)
             .then(data => {
                 console.log(data.message);
-                // Transforma o botão em "Eu Vou!" (verde pastel)
-                botaoClicado.textContent = 'Eu Vou!';
-                botaoClicado.removeAttribute('style');
-                botaoClicado.classList.remove('text-white');
-                botaoClicado.classList.add('bg-success-subtle', 'text-success');
-                botaoClicado.classList.remove('btn-quero-ir');
-                botaoClicado.classList.add('btn-eu-vou');
+                this.textContent = 'Eu Vou!';
+                this.classList.remove('btn-quero-ir', 'text-white');
+                this.classList.add('btn-eu-vou', 'bg-success-subtle', 'text-success');
+                this.removeAttribute('style');
                 configurarBotoesInteresse();
             })
             .catch(handleError);
         });
     });
 
-    // Configura botões "Eu Vou!"
     document.querySelectorAll('.btn-eu-vou').forEach(botao => {
         botao.addEventListener('click', function() {
             const eventoId = this.getAttribute('data-evento-id');
-            const botaoClicado = this;
-
             fetch('/quero-ir/' + eventoId, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
@@ -225,13 +350,10 @@ function configurarBotoesInteresse() {
             .then(handleResponse)
             .then(data => {
                 console.log(data.message);
-                // Transforma o botão de volta para "Quero ir!" (roxo)
-                botaoClicado.textContent = 'Quero ir!';
-                botaoClicado.setAttribute('style', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;');
-                botaoClicado.classList.add('text-white');
-                botaoClicado.classList.remove('bg-success-subtle', 'text-success');
-                botaoClicado.classList.remove('btn-eu-vou');
-                botaoClicado.classList.add('btn-quero-ir');
+                this.textContent = 'Quero ir!';
+                this.classList.remove('btn-eu-vou', 'bg-success-subtle', 'text-success');
+                this.classList.add('btn-quero-ir', 'text-white');
+                this.setAttribute('style', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;');
                 configurarBotoesInteresse();
             })
             .catch(handleError);
@@ -258,7 +380,6 @@ function handleError(error) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', configurarBotoesInteresse);
 /*]]>*/
 </script>
 
