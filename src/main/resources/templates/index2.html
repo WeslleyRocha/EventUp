@@ -105,7 +105,7 @@
 
                     <p class="card-text text-muted small mb-3">
                         <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                        <span th:text="${ev.local != null ? ev.local.nomeLocal : 'Local a definir'}"></span>
+                        <span th:text="${ev.local_evento != null and !ev.local_evento.isEmpty() ? ev.local_evento : 'Local a definir'}"></span>
                     </p>
 
                     <p class="card-text text-secondary small mb-4"
