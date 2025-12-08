@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
+<body>
+
+<div th:fragment="modal-evento">
+    <div class="modal fade" id="modalEvento" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title fw-bold text-white">
+                        <i class="bi bi-calendar-plus-fill me-2"></i> Criar Novo Evento
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <form id="formCriarEvento">
+
+                        <!-- CAMPOS PRINCIPAIS -->
+                        <div class="mb-3">
+                            <label for="nomeEvento" class="form-label fw-bold">Nome do Evento</label>
+                            <input type="text" class="form-control" id="nomeEvento" required>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="categoriaEvento" class="form-label">Categoria</label>
+                                <select class="form-select" id="categoriaEvento" required>
+                                    <option selected disabled value="">Selecione...</option>
+                                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nomeCategoria}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="urlImagemDestaque" class="form-label">URL da Imagem (Capa)</label>
+                                <input type="url" class="form-control" id="urlImagemDestaque" placeholder="http://...">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="dataHoraInicio" class="form-label">Data e Hora de Início</label>
+                                <input type="datetime-local" class="form-control" id="dataHoraInicio" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dataHoraFim" class="form-label">Data e Hora de Fim</label>
+                                <input type="datetime-local" class="form-control" id="dataHoraFim">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="descricaoDetalhada" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricaoDetalhada" rows="3" placeholder="Conte mais sobre o evento..."></textarea>
+                        </div>
+
+                        <!-- ACCORDION PARA CAMPOS ADICIONAIS -->
+                        <div class="accordion" id="accordionCamposAdicionais">
+
+                            <!-- Detalhes do Ingresso -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIngresso">
+                                        <i class="bi bi-ticket-perforated me-2"></i> Detalhes do Ingresso e Idade
+                                    </button>
+                                </h2>
+                                <div id="collapseIngresso" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <div class="row g-3">
+                                            <div class="col-md-4">
+                                                <label for="gratuito" class="form-label">Tipo de Ingresso</label>
+                                                <select class="form-select" id="gratuito">
+                                                    <option value="true" selected>Gratuito</option>
+                                                    <option value="false">Pago</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="campoValorIngresso" style="display: none;">
+                                                <label for="valorIngresso" class="form-label">Valor (R$:)</label>
+                                                <input type="number" step="0.01" class="form-control" id="valorIngresso" placeholder="100.00">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label for="restricaoIdade" class="form-label">Restrição de Idade</label>
+                                                <input type="number" class="form-control" id="restricaoIdade" placeholder="Ex: Para maiores de 18 anos" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Detalhes do Local -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLocal">
+                                        <i class="bi bi-geo-alt me-2"></i> Detalhes do Local
+                                    </button>
+                                </h2>
+                                <div id="collapseLocal" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="eventoOnline">
+                                            <label class="form-check-label" for="eventoOnline">Este é um evento online</label>
+                                        </div>
+
+                                        <div id="camposPresenciais">
+                                            <div class="mb-3">
+                                                <label for="local_evento" class="form-label">Nome do Local</label>
+                                                <input type="text" class="form-control" id="local_evento" placeholder="Ex: Estádio do Morumbi">
+                                            </div>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <label for="cep" class="form-label">CEP</label>
+                                                    <input type="text" class="form-control" id="cep">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label for="endereco" class="form-label">Endereço</label>
+                                                    <input type="text" class="form-control" id="endereco">
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="numero" class="form-label">Número</label>
+                                                    <input type="text" class="form-control" id="numero">
+                                                </div>
+                                                <div class="col-md-8">
+                                                    <label for="complemento" class="form-label">Complemento</label>
+                                                    <input type="text" class="form-control" id="complemento">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="campoLinkOnline" style="display: none;">
+                                            <label for="link_evento_online" class="form-label">Link do Evento Online</label>
+                                            <input type="url" class="form-control" id="link_evento_online" placeholder="http://zoom.br/...">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Informações Adicionais -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo">
+                                        <i class="bi bi-info-circle me-2"></i> Informações Adicionais
+                                    </button>
+                                </h2>
+                                <div id="collapseInfo" class="accordion-collapse collapse">
+                                    <div class="accordion-body">
+                                        <div class="mb-3">
+                                            <label for="info_estacionamento" class="form-label">Estacionamento</label>
+                                            <textarea class="form-control" id="info_estacionamento" rows="2"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="info_transporte_publico" class="form-label">Transporte Público</label>
+                                            <textarea class="form-control" id="info_transporte_publico" rows="2"></textarea>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="info_acessibilidade" class="form-label">Acessibilidade</label>
+                                            <textarea class="form-control" id="info_acessibilidade" rows="2"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="button" id="btnPublicarEvento" class="btn btn-primary btn-lg fw-bold" style="background: #667eea; border: none;">
+                                Publicar Evento
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT ATUALIZADO -->
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('formCriarEvento');
+        const btnPublicar = document.getElementById('btnPublicarEvento');
+        const modalElement = document.getElementById('modalEvento');
+        const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+
+        // Lógica para mostrar/esconder campos dinâmicos
+        const gratuitoSelect = document.getElementById('gratuito');
+        const campoValorIngresso = document.getElementById('campoValorIngresso');
+        gratuitoSelect.addEventListener('change', function() {
+            campoValorIngresso.style.display = this.value === 'false' ? 'block' : 'none';
+        });
+
+        const eventoOnlineCheckbox = document.getElementById('eventoOnline');
+        const camposPresenciais = document.getElementById('camposPresenciais');
+        const campoLinkOnline = document.getElementById('campoLinkOnline');
+        eventoOnlineCheckbox.addEventListener('change', function() {
+            camposPresenciais.style.display = this.checked ? 'none' : 'block';
+            campoLinkOnline.style.display = this.checked ? 'block' : 'none';
+        });
+
+
+        btnPublicar.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const isGratuito = document.getElementById('gratuito').value === 'true';
+            const isOnline = document.getElementById('eventoOnline').checked;
+
+            const eventoData = {
+                nomeEvento: document.getElementById('nomeEvento').value,
+                descricaoDetalhada: document.getElementById('descricaoDetalhada').value,
+                dataHoraInicio: document.getElementById('dataHoraInicio').value,
+                dataHoraFim: document.getElementById('dataHoraFim').value,
+                restricaoIdade: parseInt(document.getElementById('restricaoIdade').value) || 0,
+                urlImagemDestaque: document.getElementById('urlImagemDestaque').value,
+                gratuito: isGratuito,
+                valorIngresso: isGratuito ? 0.0 : (parseFloat(document.getElementById('valorIngresso').value) || 0.0),
+                local_evento: isOnline ? 'Online' : document.getElementById('local_evento').value,
+                evento_online: isOnline,
+                link_evento_online: isOnline ? document.getElementById('link_evento_online').value : null,
+                endereco: isOnline ? null : document.getElementById('endereco').value,
+                numero: isOnline ? null : document.getElementById('numero').value,
+                cep: isOnline ? null : document.getElementById('cep').value,
+                complemento: isOnline ? null : document.getElementById('complemento').value,
+                info_estacionamento: document.getElementById('info_estacionamento').value,
+                info_transporte_publico: document.getElementById('info_transporte_publico').value,
+                info_acessibilidade: document.getElementById('info_acessibilidade').value,
+                categoria: {
+                    id: document.getElementById('categoriaEvento').value
+                }
+                // O campo 'usuarioCriador' é tratado pelo backend.
+            };
+
+            console.log('Enviando dados do evento:', JSON.stringify(eventoData, null, 2));
+
+            fetch('/eventos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(eventoData)
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    throw new Error('Acesso não autorizado. Faça o login para criar um evento.');
+                }
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error('Falha ao criar evento: ' + text) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Evento criado com sucesso:', data);
+                alert('Evento publicado com sucesso!');
+                modal.hide();
+                form.reset();
+                window.location.reload();
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert(error.message);
+            });
+        });
+    });
+    /*]]>*/
+    </script>
+</div>
+
+</body>
+</html>
