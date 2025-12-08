@@ -10,15 +10,14 @@
     <link rel="stylesheet" th:href="@{/CSS/main.css}">
 
     <style>
-        /* Ajuste para esconder a barra de rolagem visualmente, mas permitir o scroll */
         .scroll-horizontal {
             overflow-x: auto;
             white-space: nowrap;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         .scroll-horizontal::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+            display: none;
         }
     </style>
 </head>
@@ -72,7 +71,7 @@
 
     <h4 class="mb-3 fw-bold text-secondary">Próximos Eventos</h4>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="eventos-container">
 
         <div class="col" th:each="ev : ${eventos}">
             <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
@@ -126,11 +125,25 @@
 
                 <div class="card-footer bg-white border-0 pb-4 pt-0 d-flex gap-2">
 
-                    <a th:href="@{/eventos/{id}(id=${ev.id})}"
-                       class="btn text-white w-100 rounded-pill fw-bold shadow-sm"
-                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
-                        Quero ir!
-                    </a>
+                    <!-- LÓGICA CONDICIONAL PARA O BOTÃO -->
+                    <th:block th:if="${#sets.contains(eventosInteresseIds, ev.id)}">
+                        <!-- Botão verde pastel -->
+                        <button type="button"
+                                class="btn bg-success-subtle text-success w-100 rounded-pill fw-bold shadow-sm btn-eu-vou"
+                                th:attr="data-evento-id=${ev.id}">
+                            Eu Vou!
+                        </button>
+                    </th:block>
+
+                    <th:block th:unless="${#sets.contains(eventosInteresseIds, ev.id)}">
+                        <!-- Botão roxo original -->
+                        <button type="button"
+                                class="btn text-white w-100 rounded-pill fw-bold shadow-sm btn-quero-ir"
+                                th:attr="data-evento-id=${ev.id}"
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                            Quero ir!
+                        </button>
+                    </th:block>
 
                     <a th:href="@{/eventos/{id}(id=${ev.id})}"
                        class="btn btn-outline-secondary w-100 rounded-pill fw-bold">
@@ -159,6 +172,93 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/JavaScript/app.js}"></script>
+
+<!-- SCRIPT PARA O BOTÃO "QUERO IR" e "EU VOU" -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+function configurarBotoesInteresse() {
+    // Remove listeners antigos para evitar duplicação
+    document.querySelectorAll('.btn-quero-ir, .btn-eu-vou').forEach(b => {
+        const novoBotao = b.cloneNode(true);
+        b.parentNode.replaceChild(novoBotao, b);
+    });
+
+    // Configura botões "Quero ir!"
+    document.querySelectorAll('.btn-quero-ir').forEach(botao => {
+        botao.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            const botaoClicado = this;
+
+            fetch('/quero-ir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_evento: parseInt(eventoId) })
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log(data.message);
+                // Transforma o botão em "Eu Vou!" (verde pastel)
+                botaoClicado.textContent = 'Eu Vou!';
+                botaoClicado.removeAttribute('style');
+                botaoClicado.classList.remove('text-white');
+                botaoClicado.classList.add('bg-success-subtle', 'text-success');
+                botaoClicado.classList.remove('btn-quero-ir');
+                botaoClicado.classList.add('btn-eu-vou');
+                configurarBotoesInteresse();
+            })
+            .catch(handleError);
+        });
+    });
+
+    // Configura botões "Eu Vou!"
+    document.querySelectorAll('.btn-eu-vou').forEach(botao => {
+        botao.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            const botaoClicado = this;
+
+            fetch('/quero-ir/' + eventoId, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log(data.message);
+                // Transforma o botão de volta para "Quero ir!" (roxo)
+                botaoClicado.textContent = 'Quero ir!';
+                botaoClicado.setAttribute('style', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;');
+                botaoClicado.classList.add('text-white');
+                botaoClicado.classList.remove('bg-success-subtle', 'text-success');
+                botaoClicado.classList.remove('btn-eu-vou');
+                botaoClicado.classList.add('btn-quero-ir');
+                configurarBotoesInteresse();
+            })
+            .catch(handleError);
+        });
+    });
+}
+
+function handleResponse(response) {
+    if (response.status === 401) {
+        alert('Você precisa fazer login para realizar esta ação!');
+        new bootstrap.Modal(document.getElementById('modalLogin')).show();
+        return Promise.reject('Usuário não autenticado');
+    }
+    if (!response.ok) {
+        return response.text().then(text => Promise.reject('Falha na operação: ' + text));
+    }
+    return response.json();
+}
+
+function handleError(error) {
+    if (error !== 'Usuário não autenticado') {
+        console.error('Erro:', error);
+        alert(error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', configurarBotoesInteresse);
+/*]]>*/
+</script>
 
 </body>
 </html>
