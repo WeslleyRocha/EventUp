@@ -124,11 +124,19 @@
                     </div>
                 </div>
 
-                <div class="card-footer bg-white border-0 pb-4 pt-0">
+                <div class="card-footer bg-white border-0 pb-4 pt-0 d-flex gap-2">
+
                     <a th:href="@{/eventos/{id}(id=${ev.id})}"
-                       class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2">
-                        Ver Detalhes
+                       class="btn text-white w-100 rounded-pill fw-bold shadow-sm"
+                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                        Quero ir!
                     </a>
+
+                    <a th:href="@{/eventos/{id}(id=${ev.id})}"
+                       class="btn btn-outline-secondary w-100 rounded-pill fw-bold">
+                        Detalhes
+                    </a>
+
                 </div>
             </div>
         </div>
