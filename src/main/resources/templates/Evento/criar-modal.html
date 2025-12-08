@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="pt-br">
-<body>
-
 <div th:fragment="modal-evento">
     <div class="modal fade" id="modalEvento" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
 
-                <div class="modal-header modal-header-custom">
-                    <h5 class="modal-title fw-bold text-white">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">
                         <i class="bi bi-calendar-plus-fill me-2"></i> Criar Novo Evento
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -19,140 +15,185 @@
 
                         <div class="mb-3">
                             <label for="nomeEvento" class="form-label fw-bold">Nome do Evento</label>
-                            <input type="text" class="form-control" id="nomeEvento" name="nome" placeholder="Ex: Workshop de Java" required>
+                            <input type="text" class="form-control" id="nomeEvento" name="nome" required>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label for="categoriaEvento" class="form-label">Categoria</label>
+                                <label for="categoriaEvento" class="form-label fw-bold small">Categoria</label>
                                 <select class="form-select" id="categoriaEvento" name="categoria" required>
                                     <option selected disabled value="">Selecione...</option>
-                                    <option value="01">🎵 Música</option>
-                                    <option value="02">💻 Tecnologia</option>
-                                    <option value="03">🎭 Cultura</option>
-                                    <option value="04">⚽ Esportes</option>
-                                    <option value="05">🌐 Online</option>
-                                    <option value="06">📚 Educação</option>
-                                    <option value="07">🍔 Gastronomia</option>
-                                    <option value="08">🌍 Viagens</option>
-                                    <option value="09">🎮 Games</option>
-                                    <option value="10">🎨 Arte</option>
-                                    <option value="11">🐾 Pets</option>
-                                    <option value="12">💼 Negócios</option>
-                                    <option value="13">💡 Inovação</option>
-                                    <option value="14">🏥 Saúde</option>
-                                    <option value="15">🏡 Decoração</option>
-                                    <option value="16">📷 Fotografia</option>
-                                    <option value="17">🎉 Outros</option>
-                                    <option value="18">🌱 Meio Ambiente</option>
-                                    <option value="19">🚗 Automóveis</option>
-                                    <option value="20">🧘 Bem-estar</option>
-                                    <option value="21">🎬 Filmes e Séries</option>
+                                    <option th:each="cat : ${categorias}"
+                                            th:value="${cat.nomeCategoria}"
+                                            th:text="${cat.nomeCategoria}"></option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="dataEvento" class="form-label">Data e Hora</label>
-                                <input type="datetime-local" class="form-control" id="dataEvento" name="dataHora" required>
+                                <label for="restricaoIdade" class="form-label fw-bold small">Idade Mínima</label>
+                                <input type="number" class="form-control" id="restricaoIdade" name="restricaoIdade" value="0">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="dataInicio" class="form-label fw-bold small">Início</label>
+                                <input type="datetime-local" class="form-control" id="dataInicio" name="dataInicio" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dataFim" class="form-label fw-bold small">Fim</label>
+                                <input type="datetime-local" class="form-control" id="dataFim" name="dataFim">
+                            </div>
+                        </div>
+
+                        <hr class="text-muted">
+                        <h6 class="text-primary fw-bold mb-3"><i class="bi bi-geo-alt"></i> Localização</h6>
+
+                        <div class="form-check form-switch mb-3 bg-light p-2 rounded border">
+                            <input class="form-check-input" type="checkbox" id="checkOnline" name="evento_online">
+                            <label class="form-check-label fw-bold ms-2" for="checkOnline">Evento 100% Online</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="linkOnline" class="form-label fw-bold small">Link (Se online)</label>
+                            <input type="url" class="form-control" id="linkOnline" name="link_evento_online">
+                        </div>
+
+                        <div class="row g-2 mb-2">
+                            <div class="col-md-6">
+                                <label for="localEvento" class="form-label fw-bold small">Nome do Local</label>
+                                <input type="text" class="form-control" id="localEvento" name="local_evento">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="cepEvento" class="form-label fw-bold small">CEP</label>
+                                <input type="text" class="form-control" id="cepEvento" name="cep">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="numeroEvento" class="form-label fw-bold small">Número</label>
+                                <input type="text" class="form-control" id="numeroEvento" name="numero">
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-8">
+                                <label for="enderecoEvento" class="form-label fw-bold small">Endereço</label>
+                                <input type="text" class="form-control" id="enderecoEvento" name="endereco">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="complementoEvento" class="form-label fw-bold small">Complemento</label>
+                                <input type="text" class="form-control" id="complementoEvento" name="complemento">
+                            </div>
+                        </div>
+
+                        <div class="accordion mb-3" id="accordionExtras">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed py-2 bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo">
+                                        Informações Extras
+                                    </button>
+                                </h2>
+                                <div id="collapseInfo" class="accordion-collapse collapse" data-bs-parent="#accordionExtras">
+                                    <div class="accordion-body">
+                                        <div class="mb-2">
+                                            <label class="form-label small">Estacionamento</label>
+                                            <input type="text" class="form-control form-control-sm" name="info_estacionamento">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small">Transporte</label>
+                                            <input type="text" class="form-control form-control-sm" name="info_transporte_publico">
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small">Acessibilidade</label>
+                                            <input type="text" class="form-control form-control-sm" name="info_acessibilidade">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="localEvento" class="form-label">Local / Endereço</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-                                <input type="text" class="form-control" id="localEvento" name="local" placeholder="Ex: Av. Paulista, 1000 ou Online">
+                            <label for="descricaoEvento" class="form-label fw-bold small">Descrição</label>
+                            <textarea class="form-control" id="descricaoEvento" name="descricao" rows="3" required></textarea>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label for="imgEvento" class="form-label fw-bold small">URL da Imagem</label>
+                                <input type="url" class="form-control" id="imgEvento" name="urlImagem">
                             </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="descricaoEvento" class="form-label">Descrição</label>
-                            <textarea class="form-control" id="descricaoEvento" name="descricao" rows="3" placeholder="Conte mais sobre o evento..."></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="imgEvento" class="form-label">URL da Imagem (Capa)</label>
-                            <input type="url" class="form-control" id="imgEvento" name="urlImagem" placeholder="http://...">
+                            <div class="col-md-6">
+                                <label for="valorIngresso" class="form-label fw-bold small">Valor (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="valorIngresso" name="valor">
+                            </div>
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
-                            <button type="button" id="btnPublicarEvento" class="btn btn-primary btn-lg fw-bold" style="background: #667eea; border: none;">
+                            <button type="button" id="btnPublicarEvento" class="btn btn-primary btn-lg fw-bold">
                                 Publicar Evento
                             </button>
                         </div>
-
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT SIMPLIFICADO -->
-    <script th:inline="javascript">
-    /*<![CDATA[*/
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('formCriarEvento');
-        const btnPublicar = document.getElementById('btnPublicarEvento');
-        const modalElement = document.getElementById('modalEvento');
-        const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('formCriarEvento');
+            const btnPublicar = document.getElementById('btnPublicarEvento');
+            const modalElement = document.getElementById('modalEvento');
 
-        btnPublicar.addEventListener('click', function(event) {
-            event.preventDefault();
+            // PROTEÇÃO: Só roda o script se os elementos existirem na tela
+            if (form && btnPublicar && modalElement) {
 
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
+                const modal = new bootstrap.Modal(modalElement);
+
+                btnPublicar.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    if (!form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+
+                    const formData = new FormData(form);
+
+                    // Tratamento manual do checkbox
+                    const checkOnline = document.getElementById('checkOnline');
+                    formData.set('evento_online', checkOnline ? checkOnline.checked : false);
+
+                    const originalText = btnPublicar.innerText;
+                    btnPublicar.innerText = 'Enviando...';
+                    btnPublicar.disabled = true;
+
+                    fetch('/eventos/criar', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok || response.redirected) {
+                            alert('Evento publicado com sucesso!');
+                            modal.hide();
+                            form.reset();
+                            window.location.reload();
+                        } else {
+                            // Se não estiver logado, o servidor retorna 401 ou redireciona
+                            if (response.url && response.url.includes('erro=login_necessario')) {
+                                 throw new Error('Você precisa fazer Login primeiro!');
+                            }
+                            return response.text().then(text => { throw new Error('Erro: ' + text) });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        alert(error.message);
+                        btnPublicar.innerText = originalText;
+                        btnPublicar.disabled = false;
+                    });
+                });
+            } else {
+                console.log("Modal de evento não carregado nesta página (isso é normal na Home se não clicou no botão).");
             }
-
-            const eventoData = {
-                nomeEvento: document.getElementById('nomeEvento').value,
-                descricaoDetalhada: document.getElementById('descricaoEvento').value,
-                dataHoraInicio: document.getElementById('dataEvento').value,
-                urlImagemDestaque: document.getElementById('imgEvento').value,
-                gratuito: true,
-                valorIngresso: 0.0,
-                categoria: {
-                    id: document.getElementById('categoriaEvento').value
-                },
-                local: {
-                    id: 1 // Assumindo ID 1 para o local
-                }
-                // O campo 'usuarioCriador' foi removido daqui. O backend cuidará disso.
-            };
-
-            console.log('Enviando dados do evento (sem criador):', JSON.stringify(eventoData, null, 2));
-
-            fetch('/eventos', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(eventoData)
-            })
-            .then(response => {
-                if (response.status === 401) {
-                    throw new Error('Acesso não autorizado. Faça o login para criar um evento.');
-                }
-                if (response.ok) {
-                    return response.json();
-                }
-                return response.text().then(text => { throw new Error('Falha ao criar evento: ' + text) });
-            })
-            .then(data => {
-                console.log('Evento criado com sucesso:', data);
-                alert('Evento publicado com sucesso!');
-                modal.hide();
-                form.reset();
-                window.location.reload();
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert(error.message);
-            });
         });
-    });
-    /*]]>*/
     </script>
 </div>
-
-</body>
-</html>
