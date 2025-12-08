@@ -2,6 +2,7 @@ package com.EventUp.EventUp.Model;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -24,7 +25,8 @@ public class Usuario implements Serializable {
     @Column(name = "sobrenome", nullable = false)
     private String sobrenome;
 
-    @Column(name = "data_nascimento", nullable = false)
+    @Column(name = "data_nascimento")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date data_nascimento;
 
     @Column(name = "genero")
