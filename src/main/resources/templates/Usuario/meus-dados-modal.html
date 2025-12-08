@@ -1,0 +1,112 @@
+<div th:fragment="modal-meus-dados">
+    <div class="modal fade" id="modalMeusDados" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0">
+
+                <div class="modal-header text-white border-0"
+                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-person-gear me-2"></i> Meus Dados
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4">
+
+                    <div th:if="${session.usuarioLogado != null}">
+
+                        <form method="post" th:action="@{/usuario/atualizar}">
+
+                            <h6 class="text-primary fw-bold mb-3 border-bottom pb-2">Pessoal</h6>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Nome</label>
+                                    <input type="text" class="form-control" name="nome"
+                                           th:value="${session.usuarioLogado.nome}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Sobrenome</label>
+                                    <input type="text" class="form-control" name="sobrenome"
+                                           th:value="${session.usuarioLogado.sobrenome}">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Data de Nascimento</label>
+                                    <input type="date" class="form-control" name="data_nascimento"
+                                           th:value="${session.usuarioLogado.data_nascimento != null ? #dates.format(session.usuarioLogado.data_nascimento, 'yyyy-MM-dd') : ''}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Gênero</label>
+                                    <select class="form-select" name="genero">
+                                        <option value="" selected>Selecione...</option>
+                                        <option value="Masculino" th:selected="${session.usuarioLogado.genero == 'Masculino'}">Masculino</option>
+                                        <option value="Feminino" th:selected="${session.usuarioLogado.genero == 'Feminino'}">Feminino</option>
+                                        <option value="Outro" th:selected="${session.usuarioLogado.genero == 'Outro'}">Outro</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <h6 class="text-primary fw-bold mb-3 mt-4 border-bottom pb-2">Contato</h6>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">E-mail</label>
+                                    <input type="email" class="form-control bg-light" name="email"
+                                           th:value="${session.usuarioLogado.email}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Telefone</label>
+                                    <input type="tel" class="form-control" name="telefone"
+                                           th:value="${session.usuarioLogado.telefone}">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Cidade</label>
+                                    <input type="text" class="form-control" name="cidade"
+                                           th:value="${session.usuarioLogado.cidade}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Estado</label>
+                                    <input type="text" class="form-control" name="estado"
+                                           th:value="${session.usuarioLogado.estado}" placeholder="Ex: SP">
+                                </div>
+                            </div>
+
+                            <h6 class="text-primary fw-bold mb-3 mt-4 border-bottom pb-2">Perfil</h6>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">Bio</label>
+                                <textarea class="form-control" name="bio" rows="2"
+                                          th:text="${session.usuarioLogado.bio}"></textarea>
+                            </div>
+
+                            <hr class="my-4">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-muted">Nova Senha</label>
+                                <input type="password" name="senha" class="form-control">
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-lg fw-bold text-white shadow-sm"
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                    Salvar Alterações
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div th:if="${session.usuarioLogado == null}" class="text-center text-muted py-3">
+                        <p>Sua sessão expirou. Faça login novamente.</p>
+                        <button class="btn btn-primary btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalLogin">Login</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
