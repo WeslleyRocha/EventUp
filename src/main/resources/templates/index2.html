@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             const usuario = {
-                nome_completo: `${document.getElementById('nome').value} ${document.getElementById('sobrenome').value}`.trim(),
+                nome: `${document.getElementById('nome').value} ${document.getElementById('sobrenome').value}`.trim(),
                 data_nascimento: document.getElementById('dataNascimento').value,
                 genero: document.getElementById('genero').value,
                 email: document.getElementById('email').value,
@@ -249,8 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('detalhes-categoria').textContent = evento.categoria.nomeCategoria;
                     document.getElementById('detalhes-ingresso').textContent = evento.gratuito ? 'Gratuito' : `R$ ${evento.valorIngresso.toFixed(2).replace('.', ',')}`;
                     const blocoCriador = document.getElementById('detalhes-bloco-criador');
-                    if (evento.usuarioCriador && evento.usuarioCriador.nome_completo) {
-                        document.getElementById('detalhes-usuarioCriador').textContent = evento.usuarioCriador.nome_completo;
+                    if (evento.usuarioCriador && evento.usuarioCriador.nome) {
+                        document.getElementById('detalhes-usuarioCriador').textContent = evento.usuarioCriador.nome;
                         blocoCriador.style.display = 'flex';
                     } else {
                         blocoCriador.style.display = 'none';
