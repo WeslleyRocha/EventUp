@@ -112,12 +112,8 @@
                     </p>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="small text-muted fw-bold" th:id="'contagem-container-' + ${ev.id}" th:with="contagem=${contagemInteresses.get(ev.id)}">
-                            <th:block th:if="${contagem != null and contagem > 0}">
-                                <i class="bi bi-people-fill me-1"></i>
-                                <span th:id="'contagem-numero-' + ${ev.id}" th:text="${contagem}"></span>
-                                <span th:id="'contagem-texto-' + ${ev.id}" th:text="${contagem == 1 ? ' vai' : ' vão'}"></span>
-                            </th:block>
+                        <div class="small text-muted fw-bold">
+                            <i class="bi bi-people-fill me-1"></i> +15 vão
                         </div>
 
                         <span class="badge rounded-pill px-3 py-2 fw-bold"
@@ -182,7 +178,6 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 
-// --- FUNÇÕES AUXILIARES ---
 function formatarData(dataString) {
     if (!dataString) return 'Não informada';
     return new Date(dataString).toLocaleString('pt-BR', {
@@ -190,30 +185,183 @@ function formatarData(dataString) {
     });
 }
 
-function atualizarContagemNoDOM(eventoId, novaContagem) {
-    const container = document.getElementById('contagem-container-' + eventoId);
-    if (!container) return;
-
-    if (novaContagem > 0) {
-        container.style.display = 'block';
-        let numeroSpan = document.getElementById('contagem-numero-' + eventoId);
-        if (!numeroSpan) {
-            container.innerHTML = `
-                <i class="bi bi-people-fill me-1"></i>
-                <span id="contagem-numero-${eventoId}"></span>
-                <span id="contagem-texto-${eventoId}"></span>
-            `;
-            numeroSpan = document.getElementById('contagem-numero-' + eventoId);
-        }
-        numeroSpan.textContent = novaContagem;
-        document.getElementById('contagem-texto-' + eventoId).textContent = novaContagem === 1 ? ' vai' : ' vão';
-    } else {
-        container.innerHTML = '';
-        container.style.display = 'none';
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // LÓGICA PARA O MODAL DE CADASTRO DE USUÁRIO
+    const formCadastro = document.getElementById('formCadastro');
+    const btnCadastrar = document.getElementById('btnCadastrar');
+    if(formCadastro && btnCadastrar) {
+        const modalCadastro = new bootstrap.Modal(document.getElementById('modalCadastro'));
+        btnCadastrar.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (!formCadastro.checkValidity()) {
+                formCadastro.reportValidity();
+                return;
+            }
+            const usuario = {
+                nome_completo: `${document.getElementById('nome').value} ${document.getElementById('sobrenome').value}`.trim(),
+                data_nascimento: document.getElementById('dataNascimento').value,
+                genero: document.getElementById('genero').value,
+                email: document.getElementById('email').value,
+                senha: document.getElementById('senha').value,
+                telefone: document.getElementById('telefone').value,
+                cidade: document.getElementById('cidade').value,
+                estado: document.getElementById('estado').value,
+                bio: document.getElementById('bio').value
+            };
+            fetch('/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario),
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                return response.text().then(text => { throw new Error('Falha ao cadastrar: ' + text) });
+            })
+            .then(data => {
+                alert('Cadastro realizado com sucesso!');
+                modalCadastro.hide();
+                formCadastro.reset();
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+        });
     }
+
+    // LÓGICA PARA O MODAL DE DETALHES
+    const detalhesModal = new bootstrap.Modal(document.getElementById('modalDetalhesEvento'));
+    document.querySelectorAll('.btn-detalhes').forEach(button => {
+        button.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            document.getElementById('detalhes-nomeEvento').textContent = 'Carregando...';
+            detalhesModal.show();
+            fetch('/eventos/api/' + eventoId)
+                .then(response => {
+                    if (!response.ok) throw new Error('Evento não encontrado.');
+                    return response.json();
+                })
+                .then(evento => {
+                    document.getElementById('detalhes-nomeEvento').textContent = evento.nomeEvento;
+                    document.getElementById('detalhes-urlImagemDestaque').src = evento.urlImagemDestaque || 'https://placehold.co/600x400/purple/white?text=Evento';
+                    document.getElementById('detalhes-descricaoDetalhada').textContent = evento.descricaoDetalhada || 'Nenhuma descrição fornecida.';
+                    document.getElementById('detalhes-dataHoraInicio').textContent = formatarData(evento.dataHoraInicio);
+                    document.getElementById('detalhes-categoria').textContent = evento.categoria.nomeCategoria;
+                    document.getElementById('detalhes-ingresso').textContent = evento.gratuito ? 'Gratuito' : `R$ ${evento.valorIngresso.toFixed(2).replace('.', ',')}`;
+                    const blocoCriador = document.getElementById('detalhes-bloco-criador');
+                    if (evento.usuarioCriador && evento.usuarioCriador.nome_completo) {
+                        document.getElementById('detalhes-usuarioCriador').textContent = evento.usuarioCriador.nome_completo;
+                        blocoCriador.style.display = 'flex';
+                    } else {
+                        blocoCriador.style.display = 'none';
+                    }
+                    const blocoLocal = document.getElementById('detalhes-bloco-local');
+                    const blocoLink = document.getElementById('detalhes-bloco-link');
+                    if (evento.evento_online) {
+                        blocoLocal.style.display = 'none';
+                        blocoLink.style.display = 'flex';
+                        document.getElementById('detalhes-link_evento_online').href = evento.link_evento_online;
+                    } else {
+                        blocoLocal.style.display = 'flex';
+                        blocoLink.style.display = 'none';
+                        document.getElementById('detalhes-local_evento').textContent = evento.local_evento || 'A definir';
+                    }
+                    const blocoDataFim = document.getElementById('detalhes-bloco-dataFim');
+                    if (evento.dataHoraFim) {
+                        document.getElementById('detalhes-dataHoraFim').textContent = formatarData(evento.dataHoraFim);
+                        blocoDataFim.classList.remove('d-none');
+                    } else {
+                        blocoDataFim.classList.add('d-none');
+                    }
+                    const blocoIdade = document.getElementById('detalhes-bloco-idade');
+                    if (evento.restricaoIdade && evento.restricaoIdade > 0) {
+                        document.getElementById('detalhes-restricaoIdade').textContent = evento.restricaoIdade;
+                        blocoIdade.style.display = 'flex';
+                    } else {
+                        blocoIdade.style.display = 'none';
+                    }
+                    const accordionEndereco = document.getElementById('detalhes-accordion-endereco');
+                    if(!evento.evento_online && evento.endereco) {
+                        document.getElementById('detalhes-endereco-completo').textContent = `${evento.endereco}, ${evento.numero} - CEP: ${evento.cep}`;
+                        accordionEndereco.style.display = 'block';
+                    } else {
+                        accordionEndereco.style.display = 'none';
+                    }
+                    const infoEstacionamento = document.getElementById('detalhes-info_estacionamento');
+                    const blocoEstacionamento = document.getElementById('detalhes-bloco-estacionamento');
+                    const infoTransporte = document.getElementById('detalhes-info_transporte_publico');
+                    const blocoTransporte = document.getElementById('detalhes-bloco-transporte');
+                    const infoAcessibilidade = document.getElementById('detalhes-info_acessibilidade');
+                    const blocoAcessibilidade = document.getElementById('detalhes-bloco-acessibilidade');
+                    const accordionInfo = document.getElementById('detalhes-accordion-info');
+                    let hasInfo = false;
+                    if(evento.info_estacionamento) { infoEstacionamento.textContent = evento.info_estacionamento; blocoEstacionamento.style.display = 'block'; hasInfo = true; } else { blocoEstacionamento.style.display = 'none'; }
+                    if(evento.info_transporte_publico) { infoTransporte.textContent = evento.info_transporte_publico; blocoTransporte.style.display = 'block'; hasInfo = true; } else { blocoTransporte.style.display = 'none'; }
+                    if(evento.info_acessibilidade) { infoAcessibilidade.textContent = evento.info_acessibilidade; blocoAcessibilidade.style.display = 'block'; hasInfo = true; } else { blocoAcessibilidade.style.display = 'none'; }
+                    accordionInfo.style.display = hasInfo ? 'block' : 'none';
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar detalhes do evento:', error);
+                    alert(error.message);
+                    detalhesModal.hide();
+                });
+        });
+    });
+    
+    configurarBotoesInteresse();
+});
+
+
+// LÓGICA PARA OS BOTÕES DE INTERESSE
+function configurarBotoesInteresse() {
+    document.querySelectorAll('.btn-quero-ir, .btn-eu-vou').forEach(b => {
+        const novoBotao = b.cloneNode(true);
+        b.parentNode.replaceChild(novoBotao, b);
+    });
+
+    document.querySelectorAll('.btn-quero-ir').forEach(botao => {
+        botao.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            fetch('/quero-ir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_evento: parseInt(eventoId) })
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log(data.message);
+                this.textContent = 'Eu Vou!';
+                this.classList.remove('btn-quero-ir', 'text-white');
+                this.classList.add('btn-eu-vou', 'bg-success-subtle', 'text-success');
+                this.removeAttribute('style');
+                configurarBotoesInteresse();
+            })
+            .catch(handleError);
+        });
+    });
+
+    document.querySelectorAll('.btn-eu-vou').forEach(botao => {
+        botao.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            fetch('/quero-ir/' + eventoId, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log(data.message);
+                this.textContent = 'Quero ir!';
+                this.classList.remove('btn-eu-vou', 'bg-success-subtle', 'text-success');
+                this.classList.add('btn-quero-ir', 'text-white');
+                this.setAttribute('style', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;');
+                configurarBotoesInteresse();
+            })
+            .catch(handleError);
+        });
+    });
 }
 
-function handleApiResponse(response) {
+function handleResponse(response) {
     if (response.status === 401) {
         alert('Você precisa fazer login para realizar esta ação!');
         new bootstrap.Modal(document.getElementById('modalLogin')).show();
@@ -225,154 +373,12 @@ function handleApiResponse(response) {
     return response.json();
 }
 
-function handleApiError(error) {
+function handleError(error) {
     if (error !== 'Usuário não autenticado') {
         console.error('Erro:', error);
         alert(error);
     }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // --- LÓGICA PARA O MODAL DE CADASTRO DE USUÁRIO ---
-    // (Seu código de cadastro de usuário existente)
-    
-    // --- DELEGAÇÃO DE EVENTOS PARA OS CARDS ---
-    const eventosContainer = document.getElementById('eventos-container');
-    if (eventosContainer) {
-        const detalhesModal = new bootstrap.Modal(document.getElementById('modalDetalhesEvento'));
-
-        eventosContainer.addEventListener('click', function(event) {
-            const target = event.target;
-
-            // --- Lógica para o botão "Detalhes" ---
-            const detalhesBtn = target.closest('.btn-detalhes');
-            if (detalhesBtn) {
-                const eventoId = detalhesBtn.getAttribute('data-evento-id');
-                document.getElementById('detalhes-nomeEvento').textContent = 'Carregando...';
-                detalhesModal.show();
-                fetch('/eventos/api/' + eventoId)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Evento não encontrado.');
-                        return response.json();
-                    })
-                    .then(evento => {
-                        // --- LÓGICA DE PREENCHIMENTO RESTAURADA ---
-                        document.getElementById('detalhes-nomeEvento').textContent = evento.nomeEvento;
-                        document.getElementById('detalhes-urlImagemDestaque').src = evento.urlImagemDestaque || 'https://placehold.co/600x400/purple/white?text=Evento';
-                        document.getElementById('detalhes-descricaoDetalhada').textContent = evento.descricaoDetalhada || 'Nenhuma descrição fornecida.';
-                        document.getElementById('detalhes-dataHoraInicio').textContent = formatarData(evento.dataHoraInicio);
-                        document.getElementById('detalhes-categoria').textContent = evento.categoria.nomeCategoria;
-                        document.getElementById('detalhes-ingresso').textContent = evento.gratuito ? 'Gratuito' : `R$ ${evento.valorIngresso.toFixed(2).replace('.', ',')}`;
-
-                        const blocoCriador = document.getElementById('detalhes-bloco-criador');
-                        if (evento.usuarioCriador && evento.usuarioCriador.nome) {
-                            document.getElementById('detalhes-usuarioCriador').textContent = evento.usuarioCriador.nome;
-                            blocoCriador.style.display = 'flex';
-                        } else {
-                            blocoCriador.style.display = 'none';
-                        }
-
-                        const blocoLocal = document.getElementById('detalhes-bloco-local');
-                        const blocoLink = document.getElementById('detalhes-bloco-link');
-                        if (evento.evento_online) {
-                            blocoLocal.style.display = 'none';
-                            blocoLink.style.display = 'flex';
-                            document.getElementById('detalhes-link_evento_online').href = evento.link_evento_online;
-                        } else {
-                            blocoLocal.style.display = 'flex';
-                            blocoLink.style.display = 'none';
-                            document.getElementById('detalhes-local_evento').textContent = evento.local_evento || 'A definir';
-                        }
-
-                        const blocoDataFim = document.getElementById('detalhes-bloco-dataFim');
-                        if (evento.dataHoraFim) {
-                            document.getElementById('detalhes-dataHoraFim').textContent = formatarData(evento.dataHoraFim);
-                            blocoDataFim.classList.remove('d-none');
-                        } else {
-                            blocoDataFim.classList.add('d-none');
-                        }
-
-                        const blocoIdade = document.getElementById('detalhes-bloco-idade');
-                        if (evento.restricaoIdade && evento.restricaoIdade > 0) {
-                            document.getElementById('detalhes-restricaoIdade').textContent = evento.restricaoIdade;
-                            blocoIdade.style.display = 'flex';
-                        } else {
-                            blocoIdade.style.display = 'none';
-                        }
-                        
-                        const accordionEndereco = document.getElementById('detalhes-accordion-endereco');
-                        if(!evento.evento_online && evento.endereco) {
-                            document.getElementById('detalhes-endereco-completo').textContent = `${evento.endereco}, ${evento.numero} - CEP: ${evento.cep}`;
-                            accordionEndereco.style.display = 'block';
-                        } else {
-                            accordionEndereco.style.display = 'none';
-                        }
-
-                        const infoEstacionamento = document.getElementById('detalhes-info_estacionamento');
-                        const blocoEstacionamento = document.getElementById('detalhes-bloco-estacionamento');
-                        const infoTransporte = document.getElementById('detalhes-info_transporte_publico');
-                        const blocoTransporte = document.getElementById('detalhes-bloco-transporte');
-                        const infoAcessibilidade = document.getElementById('detalhes-info_acessibilidade');
-                        const blocoAcessibilidade = document.getElementById('detalhes-bloco-acessibilidade');
-                        const accordionInfo = document.getElementById('detalhes-accordion-info');
-
-                        let hasInfo = false;
-                        if(evento.info_estacionamento) { infoEstacionamento.textContent = evento.info_estacionamento; blocoEstacionamento.style.display = 'block'; hasInfo = true; } else { blocoEstacionamento.style.display = 'none'; }
-                        if(evento.info_transporte_publico) { infoTransporte.textContent = evento.info_transporte_publico; blocoTransporte.style.display = 'block'; hasInfo = true; } else { blocoTransporte.style.display = 'none'; }
-                        if(evento.info_acessibilidade) { infoAcessibilidade.textContent = evento.info_acessibilidade; blocoAcessibilidade.style.display = 'block'; hasInfo = true; } else { blocoAcessibilidade.style.display = 'none'; }
-                        accordionInfo.style.display = hasInfo ? 'block' : 'none';
-                    })
-                    .catch(error => {
-                        console.error('Erro ao buscar detalhes do evento:', error);
-                        alert(error.message);
-                        detalhesModal.hide();
-                    });
-                return;
-            }
-
-            // --- Lógica para o botão "Quero Ir" ---
-            const queroIrBtn = target.closest('.btn-quero-ir');
-            if (queroIrBtn) {
-                const eventoId = queroIrBtn.getAttribute('data-evento-id');
-                fetch('/quero-ir', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id_evento: parseInt(eventoId) })
-                })
-                .then(handleApiResponse)
-                .then(data => {
-                    queroIrBtn.textContent = 'Eu Vou!';
-                    queroIrBtn.classList.remove('btn-quero-ir', 'text-white');
-                    queroIrBtn.classList.add('btn-eu-vou', 'bg-success-subtle', 'text-success');
-                    queroIrBtn.removeAttribute('style');
-                    atualizarContagemNoDOM(eventoId, data.novaContagem);
-                })
-                .catch(handleApiError);
-                return;
-            }
-
-            // --- Lógica para o botão "Eu Vou" ---
-            const euVouBtn = target.closest('.btn-eu-vou');
-            if (euVouBtn) {
-                const eventoId = euVouBtn.getAttribute('data-evento-id');
-                fetch('/quero-ir/' + eventoId, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' }
-                })
-                .then(handleApiResponse)
-                .then(data => {
-                    euVouBtn.textContent = 'Quero ir!';
-                    euVouBtn.classList.remove('btn-eu-vou', 'bg-success-subtle', 'text-success');
-                    euVouBtn.classList.add('btn-quero-ir', 'text-white');
-                    euVouBtn.setAttribute('style', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;');
-                    atualizarContagemNoDOM(eventoId, data.novaContagem);
-                })
-                .catch(handleApiError);
-            }
-        });
-    }
-});
 
 /*]]>*/
 </script>
