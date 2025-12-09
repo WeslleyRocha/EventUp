@@ -22,43 +22,48 @@ public class QueroIrController {
     @PostMapping
     public ResponseEntity<?> registrarInteresse(@RequestBody Map<String, Long> payload, HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
-
         if (usuarioLogado == null) {
-            return new ResponseEntity<>("Usuário não autenticado.", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Map.of("message", "Usuário não autenticado."), HttpStatus.UNAUTHORIZED);
         }
 
         Long idEvento = payload.get("id_evento");
         if (idEvento == null) {
-            return new ResponseEntity<>("O ID do evento é obrigatório.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(Map.of("message", "O ID do evento é obrigatório."), HttpStatus.BAD_REQUEST);
         }
 
         QueroIr novoInteresse = new QueroIr();
         novoInteresse.setUsuario(usuarioLogado);
-
         Evento evento = new Evento();
         evento.setId(idEvento);
         novoInteresse.setEvento(evento);
-
         queroIrRepository.save(novoInteresse);
 
-        return new ResponseEntity<>(Map.of("message", "Interesse registrado com sucesso!"), HttpStatus.CREATED);
+        long novaContagem = queroIrRepository.countByEvento_Id(idEvento);
+
+        return new ResponseEntity<>(Map.of(
+                "message", "Interesse registrado com sucesso!",
+                "novaContagem", novaContagem
+        ), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{eventoId}")
     public ResponseEntity<?> cancelarInteresse(@PathVariable Long eventoId, HttpSession session) {
         Usuario usuarioLogado = (Usuario) session.getAttribute("usuarioLogado");
-
         if (usuarioLogado == null) {
-            return new ResponseEntity<>("Usuário não autenticado.", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(Map.of("message", "Usuário não autenticado."), HttpStatus.UNAUTHORIZED);
         }
 
         try {
             queroIrRepository.deleteByUsuarioAndEvento_Id(usuarioLogado, eventoId);
-            return new ResponseEntity<>(Map.of("message", "Interesse cancelado com sucesso!"), HttpStatus.OK);
+            
+            long novaContagem = queroIrRepository.countByEvento_Id(eventoId);
 
+            return new ResponseEntity<>(Map.of(
+                    "message", "Interesse cancelado com sucesso!",
+                    "novaContagem", novaContagem
+            ), HttpStatus.OK);
         } catch (Exception e) {
-
-            return new ResponseEntity<>("Erro ao cancelar o interesse.", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(Map.of("message", "Erro ao cancelar o interesse."), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
