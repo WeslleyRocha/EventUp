@@ -1,11 +1,16 @@
 package com.EventUp.EventUp.Model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "Eventos")
@@ -17,13 +22,6 @@ public class Evento implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_evento")
     private Long id;
-
-    // --- O BLOCO QUE RESOLVE O ERRO DA TELA BRANCA ---
-    // Esse é o relacionamento que permite contar quantos "Quero ir" existem
-    @OneToMany(mappedBy = "evento")
-    @JsonIgnore // Importante para não travar o JSON
-    private List<QueroIr> inscricoes;
-    // -------------------------------------------------
 
     @Column(name = "nome_evento", nullable = false)
     private String nomeEvento;
@@ -87,31 +85,28 @@ public class Evento implements Serializable {
     @JoinColumn(name = "id_usuario_criador", nullable = false)
     private Usuario usuarioCriador;
 
-    // GETTERS E SETTERS pra funcionar
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    // Getter e Setter da Lista de Inscrições
-    public List<QueroIr> getInscricoes() {
-        return inscricoes;
-    }
-
-    public void setInscricoes(List<QueroIr> inscricoes) {
-        this.inscricoes = inscricoes;
-    }
-
     public String getNomeEvento() {
         return nomeEvento;
     }
 
     public void setNomeEvento(String nomeEvento) {
         this.nomeEvento = nomeEvento;
+    }
+
+    public Boolean getEvento_online() {
+        return evento_online;
+    }
+
+    public void setEvento_online(Boolean evento_online) {
+        this.evento_online = evento_online;
+    }
+
+    public String getLink_evento_online() {
+        return link_evento_online;
+    }
+
+    public void setLink_evento_online(String link_evento_online) {
+        this.link_evento_online = link_evento_online;
     }
 
     public String getDescricaoDetalhada() {
@@ -176,22 +171,6 @@ public class Evento implements Serializable {
 
     public void setLocal_evento(String local_evento) {
         this.local_evento = local_evento;
-    }
-
-    public Boolean getEvento_online() {
-        return evento_online;
-    }
-
-    public void setEvento_online(Boolean evento_online) {
-        this.evento_online = evento_online;
-    }
-
-    public String getLink_evento_online() {
-        return link_evento_online;
-    }
-
-    public void setLink_evento_online(String link_evento_online) {
-        this.link_evento_online = link_evento_online;
     }
 
     public String getEndereco() {
@@ -265,4 +244,7 @@ public class Evento implements Serializable {
     public void setUsuarioCriador(Usuario usuarioCriador) {
         this.usuarioCriador = usuarioCriador;
     }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 }

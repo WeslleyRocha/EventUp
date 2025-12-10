@@ -3,36 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EventUp</title>
+    <title>EventUp - Encontre sua turma</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/CSS/main.css}">
+
     <style>
-        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; height: 4.5em; }
-        .hover-scale:hover { transform: scale(1.02); transition: 0.2s; }
+        .scroll-horizontal {
+            overflow-x: auto;
+            white-space: nowrap;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scroll-horizontal::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
 <div th:replace="~{Layout/navbar :: navbar-principal}"></div>
+<div th:replace="~{Layout/navbar :: menu-lateral}"></div>
 
-<header class="hero-section text-white text-center py-5 mb-5"
-        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-top: -1px;">
-    <div class="container py-5">
+<header class="hero-section text-center py-5 bg-light mb-4">
+    <div class="container">
         <h1 class="display-4 fw-bold mb-3">Nunca mais vá sozinho!</h1>
-        <p class="lead mb-4 opacity-75">Encontre eventos incríveis e conecte-se com quem também vai.</p>
+        <p class="lead mb-4 text-muted">Encontre eventos incríveis e conecte-se com quem também vai.</p>
 
-        <button th:if="${session.usuarioLogado == null}"
-                class="btn btn-light text-primary btn-lg rounded-pill fw-bold px-5 mb-4 shadow-sm hover-scale"
+        <button class="btn btn-primary btn-lg rounded-pill fw-bold px-5 mb-4 shadow-sm"
                 data-bs-toggle="modal" data-bs-target="#modalCadastro">
             <i class="bi bi-person-plus-fill me-2"></i> Criar minha conta grátis
         </button>
 
-        <div th:if="${session.usuarioLogado == null}" class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <form action="/" method="get" class="position-relative">
-                    <input type="text" name="busca" class="form-control form-control-lg rounded-pill ps-4 pe-5 border-0 shadow-sm" placeholder="Buscar show, teatro..." th:value="${param.busca}">
-                    <button type="submit" class="btn btn-primary rounded-pill position-absolute top-0 end-0 m-1 px-4 fw-bold">Buscar</button>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form action="/" method="get" class="d-flex bg-white p-2 rounded-pill shadow-sm border">
+                    <input name="busca"
+                           class="form-control border-0 rounded-pill ps-4"
+                           type="search"
+                           placeholder="Buscar show, teatro, tech..."
+                           aria-label="Search"
+                           th:value="${param.busca}"> <button class="btn btn-primary rounded-pill px-4 fw-bold" type="submit">Buscar</button>
                 </form>
             </div>
         </div>
@@ -40,97 +52,335 @@
 </header>
 
 <div class="container mb-5">
-    <div class="d-flex gap-2 overflow-auto pb-2 justify-content-lg-center">
-        <a href="/" class="btn rounded-pill fw-bold px-4" th:classappend="${categoriaSelecionada == null} ? 'btn-dark' : 'btn-light border'">Todos</a>
-        <a th:each="cat : ${categorias}" th:href="@{/(categoria=${cat.nomeCategoria})}"
-           class="btn rounded-pill fw-bold px-4" th:classappend="${categoriaSelecionada == cat.nomeCategoria} ? 'btn-dark' : 'btn-light border'"
-           th:text="${cat.nomeCategoria}"></a>
+
+    <div class="d-flex gap-2 align-items-center mb-4 pb-3 overflow-x-auto flex-nowrap"
+         style="scrollbar-width: thin;">
+        <a th:href="@{/}"
+           class="btn rounded-pill px-4 fw-bold flex-shrink-0"
+           th:classappend="${param.categoriaId == null} ? 'btn-dark' : 'btn-light border'">
+            Todos
+        </a>
+
+        <a th:each="cat : ${categorias}"
+           th:href="@{/(categoriaId=${cat.id})}"
+           class="btn rounded-pill px-4 d-flex align-items-center gap-2 flex-shrink-0"
+           th:classappend="${param.categoriaId != null and param.categoriaId[0] == cat.id.toString()} ? 'btn-dark' : 'btn-light border'">
+            <span th:text="${cat.nomeCategoria}"></span>
+        </a>
     </div>
-</div>
 
-<div class="container mb-5">
-    <h3 class="fw-bold text-secondary mb-4">Próximos Eventos</h3>
+    <h4 class="mb-3 fw-bold text-secondary">Próximos Eventos</h4>
 
-    <div th:if="${#lists.isEmpty(eventos)}" class="text-center py-5">
-        <p class="text-muted fs-5">Nenhum evento encontrado.</p>
-        <a href="/" class="btn btn-outline-primary mt-2">Limpar filtros</a>
-    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4" id="eventos-container">
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
         <div class="col" th:each="ev : ${eventos}">
-            <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden hover-scale">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition-all">
 
-                <div class="position-relative">
-                    <img th:src="${ev.urlImagemDestaque != null && !ev.urlImagemDestaque.isEmpty() ? ev.urlImagemDestaque : 'https://placehold.co/600x400/purple/white?text=Evento'}"
-                         class="card-img-top" style="height: 200px; object-fit: cover;">
+                <div class="position-relative" style="height: 200px; overflow: hidden; border-radius: 0.5rem 0.5rem 0 0;">
 
-                    <div th:if="${ev.dataHoraInicio != null}" class="position-absolute top-0 start-0 m-3 bg-danger text-white rounded p-2 text-center shadow-sm lh-1">
-                        <span class="d-block fw-bold small" th:text="${#temporals.format(ev.dataHoraInicio, 'dd')}">01</span>
-                        <span class="d-block small text-uppercase" style="font-size: 0.7rem;" th:text="${#temporals.format(ev.dataHoraInicio, 'MMM')}">DEZ</span>
+                    <img th:src="${ev.urlImagemDestaque != null && !ev.urlImagemDestaque.isEmpty() ? ev.urlImagemDestaque : 'https://placehold.co/600x400/purple/white?text=' + ev.nomeEvento}"
+                         class="card-img-top w-100 h-100"
+                         style="object-fit: cover;"
+                         alt="Imagem do Evento">
+
+                    <div class="position-absolute top-0 start-0 m-3 bg-danger text-white rounded p-2 text-center shadow-sm lh-1"
+                         style="min-width: 50px;"
+                         th:if="${ev.dataHoraInicio != null}">
+                        <span class="d-block fw-bold h4 mb-0"
+                              th:text="${#temporals.format(ev.dataHoraInicio, 'dd')}"></span>
+                        <span class="d-block small text-uppercase" style="font-size: 0.7rem;"
+                              th:text="${#temporals.format(ev.dataHoraInicio, 'MMM')}"></span>
                     </div>
-                    <span class="position-absolute top-0 end-0 m-3 badge bg-light text-dark shadow-sm rounded-pill"
-                          th:text="${ev.categoria?.nomeCategoria ?: 'Geral'}"></span>
+
+                    <span class="position-absolute top-0 end-0 m-3 badge bg-light text-dark shadow-sm rounded-pill px-3 py-2 fw-bold opacity-90">
+                           <i class="bi bi-tag-fill me-1 text-primary"></i>
+                           <span th:text="${ev.categoria.nomeCategoria}"></span>
+                    </span>
                 </div>
 
-                <div class="card-body p-4">
-                    <h5 class="card-title fw-bold mb-3" th:text="${ev.nomeEvento}">Nome</h5>
-                    <p class="card-text text-secondary small mb-4 line-clamp-3" th:text="${ev.descricaoDetalhada}"></p>
+                <div class="card-body">
 
-                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                        <div class="d-flex align-items-center small fw-bold text-secondary">
-                            <i class="bi bi-people-fill me-2"></i>
-                            <span th:id="'contador-' + ${ev.id}" class="small fw-bold text-secondary">+15 vão</span>
+                    <h5 class="card-title fw-bold mb-2" th:text="${ev.nomeEvento}">Título</h5>
+
+                    <p class="card-text text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                        <span th:text="${ev.local_evento != null and !ev.local_evento.isEmpty() ? ev.local_evento : 'Local a definir'}"></span>
+                    </p>
+
+                    <p class="card-text text-secondary small mb-4"
+                       th:text="${ev.descricaoDetalhada != null ? #strings.abbreviate(ev.descricaoDetalhada, 70) : ''}">
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="small text-muted fw-bold">
+                            <i class="bi bi-people-fill me-1"></i> +15 vão
                         </div>
-                        <span class="badge rounded-pill px-3 py-2"
-                              th:classappend="${ev.gratuito} ? 'bg-success bg-opacity-10 text-success' : 'bg-primary bg-opacity-10 text-primary'"
-                              th:text="${ev.gratuito} ? 'Gratuito' : 'R$ ' + ${ev.valorIngresso}">
-                            </span>
+
+                        <span class="badge rounded-pill px-3 py-2 fw-bold"
+                              th:classappend="${ev.gratuito} ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'"
+                              th:text="${ev.gratuito ? 'Gratuito' : 'R$ ' + #numbers.formatDecimal(ev.valorIngresso, 1, 'POINT', 2, 'COMMA')}">
+                        </span>
                     </div>
                 </div>
 
                 <div class="card-footer bg-white border-0 pb-4 pt-0 d-flex gap-2">
-                    <button type="button" class="btn text-white w-100 rounded-pill fw-bold shadow-sm"
-                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;"
-                            th:onclick="'registrarInteresse(' + ${ev.id} + ')'">
-                        Quero ir!
-                    </button>
 
-                    <button type="button" class="btn btn-outline-secondary w-100 rounded-pill fw-bold"
-                            onclick="abrirDetalhes(this)"
-                            th:data-titulo="${ev.nomeEvento}"
-                            th:data-img="${ev.urlImagemDestaque}"
-                            th:data-cat="${ev.categoria?.nomeCategoria}"
-                            th:data-data="${ev.dataHoraInicio != null ? #temporals.format(ev.dataHoraInicio, 'dd/MM/yyyy') : ''}"
-                            th:data-hora="${ev.dataHoraInicio != null ? #temporals.format(ev.dataHoraInicio, 'HH:mm') : ''}"
-                            th:data-local="${ev.evento_online == true ? 'Evento Online' : ev.local_evento}"
-                            th:data-valor="${ev.gratuito ? 'Gratuito' : 'R$ ' + ev.valorIngresso}"
-                            th:data-desc="${ev.descricaoDetalhada}"
-                            th:data-criador="${ev.usuarioCriador?.nome ?: 'EventUp'}">
+                    <th:block th:if="${#sets.contains(eventosInteresseIds, ev.id)}">
+                        <button type="button"
+                                class="btn bg-success-subtle text-success w-100 rounded-pill fw-bold shadow-sm btn-eu-vou"
+                                th:attr="data-evento-id=${ev.id}">
+                            Eu Vou!
+                        </button>
+                    </th:block>
+
+                    <th:block th:unless="${#sets.contains(eventosInteresseIds, ev.id)}">
+                        <button type="button"
+                                class="btn text-white w-100 rounded-pill fw-bold shadow-sm btn-quero-ir"
+                                th:attr="data-evento-id=${ev.id}"
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                            Quero ir!
+                        </button>
+                    </th:block>
+
+                    <button type="button"
+                       class="btn btn-outline-secondary w-100 rounded-pill fw-bold btn-detalhes"
+                       th:attr="data-evento-id=${ev.id}">
                         Detalhes
                     </button>
-                </div>
 
+                </div>
             </div>
+        </div>
+
+        <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(eventos)}">
+            <div class="text-muted mb-3 opacity-50">
+                <i class="bi bi-search display-1"></i>
+            </div>
+            <h3 class="fw-bold text-secondary">Nenhum evento encontrado :(</h3>
+            <p class="text-muted">Tente mudar o filtro ou buscar por outro termo.</p>
+            <a th:href="@{/}" class="btn btn-primary rounded-pill px-4 mt-2">Limpar filtros</a>
         </div>
     </div>
 </div>
 
-<div th:replace="~{Layout/footer :: rodape-padrao}"></div>
-
+<!-- INCLUSÃO DE TODOS OS MODAIS -->
 <div th:replace="~{Usuario/criar_cadastro-modal :: modal-cadastro}"></div>
 <div th:replace="~{Usuario/login-modal :: modal-login}"></div>
-<div th:replace="~{Evento/criar_evento-modal :: modal-evento}"></div>
 <div th:replace="~{Usuario/meus-dados-modal :: modal-meus-dados}"></div>
-<div th:replace="~{Evento/detalhes-evento-modal :: modal-detalhes}"></div>
+<div th:replace="~{Evento/criar_evento-modal :: modal-evento}"></div>
+<div th:replace="~{Evento/detalhes-evento :: modal-detalhes-evento}"></div>
+<div th:replace="~{Layout/footer :: rodape-padrao}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/JavaScript/app.js}"></script>
 
-<script th:if="${erro}">
-    document.addEventListener("DOMContentLoaded", function() {
-        var loginModal = new bootstrap.Modal(document.getElementById('modalLogin'));
-        loginModal.show();
+<!-- SCRIPTS PARA OS BOTÕES E MODAIS -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+function formatarData(dataString) {
+    if (!dataString) return 'Não informada';
+    return new Date(dataString).toLocaleString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // LÓGICA PARA O MODAL DE CADASTRO DE USUÁRIO
+    const formCadastro = document.getElementById('formCadastro');
+    const btnCadastrar = document.getElementById('btnCadastrar');
+    if(formCadastro && btnCadastrar) {
+        const modalCadastro = new bootstrap.Modal(document.getElementById('modalCadastro'));
+        btnCadastrar.addEventListener('click', function (event) {
+            event.preventDefault();
+            if (!formCadastro.checkValidity()) {
+                formCadastro.reportValidity();
+                return;
+            }
+            const usuario = {
+                nome_completo: `${document.getElementById('nome').value} ${document.getElementById('sobrenome').value}`.trim(),
+                data_nascimento: document.getElementById('dataNascimento').value,
+                genero: document.getElementById('genero').value,
+                email: document.getElementById('email').value,
+                senha: document.getElementById('senha').value,
+                telefone: document.getElementById('telefone').value,
+                cidade: document.getElementById('cidade').value,
+                estado: document.getElementById('estado').value,
+                bio: document.getElementById('bio').value
+            };
+            fetch('/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(usuario),
+            })
+            .then(response => {
+                if (response.ok) return response.json();
+                return response.text().then(text => { throw new Error('Falha ao cadastrar: ' + text) });
+            })
+            .then(data => {
+                alert('Cadastro realizado com sucesso!');
+                modalCadastro.hide();
+                formCadastro.reset();
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+        });
+    }
+
+    // LÓGICA PARA O MODAL DE DETALHES
+    const detalhesModal = new bootstrap.Modal(document.getElementById('modalDetalhesEvento'));
+    document.querySelectorAll('.btn-detalhes').forEach(button => {
+        button.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            document.getElementById('detalhes-nomeEvento').textContent = 'Carregando...';
+            detalhesModal.show();
+            fetch('/eventos/api/' + eventoId)
+                .then(response => {
+                    if (!response.ok) throw new Error('Evento não encontrado.');
+                    return response.json();
+                })
+                .then(evento => {
+                    document.getElementById('detalhes-nomeEvento').textContent = evento.nomeEvento;
+                    document.getElementById('detalhes-urlImagemDestaque').src = evento.urlImagemDestaque || 'https://placehold.co/600x400/purple/white?text=Evento';
+                    document.getElementById('detalhes-descricaoDetalhada').textContent = evento.descricaoDetalhada || 'Nenhuma descrição fornecida.';
+                    document.getElementById('detalhes-dataHoraInicio').textContent = formatarData(evento.dataHoraInicio);
+                    document.getElementById('detalhes-categoria').textContent = evento.categoria.nomeCategoria;
+                    document.getElementById('detalhes-ingresso').textContent = evento.gratuito ? 'Gratuito' : `R$ ${evento.valorIngresso.toFixed(2).replace('.', ',')}`;
+                    const blocoCriador = document.getElementById('detalhes-bloco-criador');
+                    if (evento.usuarioCriador && evento.usuarioCriador.nome_completo) {
+                        document.getElementById('detalhes-usuarioCriador').textContent = evento.usuarioCriador.nome_completo;
+                        blocoCriador.style.display = 'flex';
+                    } else {
+                        blocoCriador.style.display = 'none';
+                    }
+                    const blocoLocal = document.getElementById('detalhes-bloco-local');
+                    const blocoLink = document.getElementById('detalhes-bloco-link');
+                    if (evento.evento_online) {
+                        blocoLocal.style.display = 'none';
+                        blocoLink.style.display = 'flex';
+                        document.getElementById('detalhes-link_evento_online').href = evento.link_evento_online;
+                    } else {
+                        blocoLocal.style.display = 'flex';
+                        blocoLink.style.display = 'none';
+                        document.getElementById('detalhes-local_evento').textContent = evento.local_evento || 'A definir';
+                    }
+                    const blocoDataFim = document.getElementById('detalhes-bloco-dataFim');
+                    if (evento.dataHoraFim) {
+                        document.getElementById('detalhes-dataHoraFim').textContent = formatarData(evento.dataHoraFim);
+                        blocoDataFim.classList.remove('d-none');
+                    } else {
+                        blocoDataFim.classList.add('d-none');
+                    }
+                    const blocoIdade = document.getElementById('detalhes-bloco-idade');
+                    if (evento.restricaoIdade && evento.restricaoIdade > 0) {
+                        document.getElementById('detalhes-restricaoIdade').textContent = evento.restricaoIdade;
+                        blocoIdade.style.display = 'flex';
+                    } else {
+                        blocoIdade.style.display = 'none';
+                    }
+                    const accordionEndereco = document.getElementById('detalhes-accordion-endereco');
+                    if(!evento.evento_online && evento.endereco) {
+                        document.getElementById('detalhes-endereco-completo').textContent = `${evento.endereco}, ${evento.numero} - CEP: ${evento.cep}`;
+                        accordionEndereco.style.display = 'block';
+                    } else {
+                        accordionEndereco.style.display = 'none';
+                    }
+                    const infoEstacionamento = document.getElementById('detalhes-info_estacionamento');
+                    const blocoEstacionamento = document.getElementById('detalhes-bloco-estacionamento');
+                    const infoTransporte = document.getElementById('detalhes-info_transporte_publico');
+                    const blocoTransporte = document.getElementById('detalhes-bloco-transporte');
+                    const infoAcessibilidade = document.getElementById('detalhes-info_acessibilidade');
+                    const blocoAcessibilidade = document.getElementById('detalhes-bloco-acessibilidade');
+                    const accordionInfo = document.getElementById('detalhes-accordion-info');
+                    let hasInfo = false;
+                    if(evento.info_estacionamento) { infoEstacionamento.textContent = evento.info_estacionamento; blocoEstacionamento.style.display = 'block'; hasInfo = true; } else { blocoEstacionamento.style.display = 'none'; }
+                    if(evento.info_transporte_publico) { infoTransporte.textContent = evento.info_transporte_publico; blocoTransporte.style.display = 'block'; hasInfo = true; } else { blocoTransporte.style.display = 'none'; }
+                    if(evento.info_acessibilidade) { infoAcessibilidade.textContent = evento.info_acessibilidade; blocoAcessibilidade.style.display = 'block'; hasInfo = true; } else { blocoAcessibilidade.style.display = 'none'; }
+                    accordionInfo.style.display = hasInfo ? 'block' : 'none';
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar detalhes do evento:', error);
+                    alert(error.message);
+                    detalhesModal.hide();
+                });
+        });
+    });
+    
+    configurarBotoesInteresse();
+});
+
+
+// LÓGICA PARA OS BOTÕES DE INTERESSE
+function configurarBotoesInteresse() {
+    document.querySelectorAll('.btn-quero-ir, .btn-eu-vou').forEach(b => {
+        const novoBotao = b.cloneNode(true);
+        b.parentNode.replaceChild(novoBotao, b);
+    });
+
+    document.querySelectorAll('.btn-quero-ir').forEach(botao => {
+        botao.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            fetch('/quero-ir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_evento: parseInt(eventoId) })
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log(data.message);
+                this.textContent = 'Eu Vou!';
+                this.classList.remove('btn-quero-ir', 'text-white');
+                this.classList.add('btn-eu-vou', 'bg-success-subtle', 'text-success');
+                this.removeAttribute('style');
+                configurarBotoesInteresse();
+            })
+            .catch(handleError);
+        });
+    });
+
+    document.querySelectorAll('.btn-eu-vou').forEach(botao => {
+        botao.addEventListener('click', function() {
+            const eventoId = this.getAttribute('data-evento-id');
+            fetch('/quero-ir/' + eventoId, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(handleResponse)
+            .then(data => {
+                console.log(data.message);
+                this.textContent = 'Quero ir!';
+                this.classList.remove('btn-eu-vou', 'bg-success-subtle', 'text-success');
+                this.classList.add('btn-quero-ir', 'text-white');
+                this.setAttribute('style', 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;');
+                configurarBotoesInteresse();
+            })
+            .catch(handleError);
+        });
+    });
+}
+
+function handleResponse(response) {
+    if (response.status === 401) {
+        alert('Você precisa fazer login para realizar esta ação!');
+        new bootstrap.Modal(document.getElementById('modalLogin')).show();
+        return Promise.reject('Usuário não autenticado');
+    }
+    if (!response.ok) {
+        return response.text().then(text => Promise.reject('Falha na operação: ' + text));
+    }
+    return response.json();
+}
+
+function handleError(error) {
+    if (error !== 'Usuário não autenticado') {
+        console.error('Erro:', error);
+        alert(error);
+    }
+}
+
+/*]]>*/
 </script>
 
 </body>

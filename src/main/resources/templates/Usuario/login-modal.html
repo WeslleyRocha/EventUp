@@ -1,41 +1,29 @@
 <div th:fragment="modal-login">
     <div class="modal fade" id="modalLogin" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 rounded-4 shadow">
-
-                <div class="modal-header border-0 pb-0">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title fw-bold text-white">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
-                <div class="modal-body p-5 pt-2 text-center">
-                    <h3 class="fw-bold mb-3 text-dark">Bem-vindo de volta!</h3>
-                    <p class="text-muted mb-4">Entre para confirmar presença nos eventos.</p>
-
-                    <div th:if="${erro}" class="alert alert-danger d-flex align-items-center mb-3" role="alert">
-                        <i class="bi bi-exclamation-circle-fill me-2"></i>
-                        <div th:text="${erro}">Erro ao logar</div>
-                    </div>
-
-                    <form method="post" th:action="@{/usuario/login}">
-                        <div class="form-floating mb-3">
-                            <input type="email" name="email" class="form-control rounded-3" id="floatingInput" placeholder="nome@exemplo.com" required>
-                            <label for="floatingInput">E-mail</label>
+                <div class="modal-body p-4">
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">E-mail</label>
+                            <input type="email" name="email" class="form-control" required>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" name="senha" class="form-control rounded-3" id="floatingPassword" placeholder="Senha" required>
-                            <label for="floatingPassword">Senha</label>
+                        <div class="mb-3">
+                            <label class="form-label">Senha</label>
+                            <input type="password" name="senha" class="form-control" required>
                         </div>
 
-                        <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold hover-scale" type="submit">
-                            Entrar
-                        </button>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary fw-bold" style="background: #667eea; border: none;">Entrar</button>
+                        </div>
                     </form>
-
-                    <div class="mt-4 pt-3 border-top">
-                        <p class="small text-muted">Ainda não tem conta?
-                            <a href="#" class="text-primary fw-bold text-decoration-none" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalCadastro">Criar conta</a>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
