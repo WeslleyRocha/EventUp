@@ -41,7 +41,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold small text-muted">Gênero</label>
                                     <select class="form-select" name="genero">
-                                        <option value="" selected>Selecione...</option>
+                                        <option value="" disabled>Selecione...</option>
                                         <option value="Masculino" th:selected="${session.usuarioLogado.genero == 'Masculino'}">Masculino</option>
                                         <option value="Feminino" th:selected="${session.usuarioLogado.genero == 'Feminino'}">Feminino</option>
                                         <option value="Outro" th:selected="${session.usuarioLogado.genero == 'Outro'}">Outro</option>
@@ -49,7 +49,7 @@
                                 </div>
                             </div>
 
-                            <h6 class="text-primary fw-bold mb-3 mt-4 border-bottom pb-2">Contato</h6>
+                            <h6 class="text-primary fw-bold mb-3 mt-4 border-bottom pb-2">Contato e Localização</h6>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
@@ -72,23 +72,43 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-bold small text-muted">Estado</label>
-                                    <input type="text" class="form-control" name="estado"
-                                           th:value="${session.usuarioLogado.estado}" placeholder="Ex: SP">
+                                    <select class="form-select" name="estado">
+                                        <option value="" selected>UF</option>
+                                        <option value="SP" th:selected="${session.usuarioLogado.estado == 'SP'}">SP</option>
+                                        <option value="RJ" th:selected="${session.usuarioLogado.estado == 'RJ'}">RJ</option>
+                                        <option value="MG" th:selected="${session.usuarioLogado.estado == 'MG'}">MG</option>
+                                        <option value="BA" th:selected="${session.usuarioLogado.estado == 'BA'}">BA</option>
+                                        <option value="RS" th:selected="${session.usuarioLogado.estado == 'RS'}">RS</option>
+                                        <option value="PR" th:selected="${session.usuarioLogado.estado == 'PR'}">PR</option>
+                                        <option value="PE" th:selected="${session.usuarioLogado.estado == 'PE'}">PE</option>
+                                        <option value="CE" th:selected="${session.usuarioLogado.estado == 'CE'}">CE</option>
+                                        <option value="DF" th:selected="${session.usuarioLogado.estado == 'DF'}">DF</option>
+                                        <option value="GO" th:selected="${session.usuarioLogado.estado == 'GO'}">GO</option>
+                                        <option value="SC" th:selected="${session.usuarioLogado.estado == 'SC'}">SC</option>
+                                        <option value="ES" th:selected="${session.usuarioLogado.estado == 'ES'}">ES</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <h6 class="text-primary fw-bold mb-3 mt-4 border-bottom pb-2">Perfil</h6>
 
                             <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">URL da Foto</label>
+                                <input type="url" class="form-control" name="foto"
+                                       th:value="${session.usuarioLogado.foto}" placeholder="https://...">
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label fw-bold small text-muted">Bio</label>
-                                <textarea class="form-control" name="bio" rows="2"
+                                <textarea class="form-control" name="bio" rows="3"
                                           th:text="${session.usuarioLogado.bio}"></textarea>
                             </div>
 
                             <hr class="my-4">
+
                             <div class="mb-4">
-                                <label class="form-label fw-bold small text-muted">Nova Senha</label>
-                                <input type="password" name="senha" class="form-control">
+                                <label class="form-label fw-bold small text-muted">Alterar Senha</label>
+                                <input type="password" name="senha" class="form-control" placeholder="Deixe vazio para manter a atual">
                             </div>
 
                             <div class="d-grid gap-2">
@@ -97,14 +117,9 @@
                                     Salvar Alterações
                                 </button>
                             </div>
+
                         </form>
                     </div>
-
-                    <div th:if="${session.usuarioLogado == null}" class="text-center text-muted py-3">
-                        <p>Sua sessão expirou. Faça login novamente.</p>
-                        <button class="btn btn-primary btn-sm" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalLogin">Login</button>
-                    </div>
-
                 </div>
             </div>
         </div>

@@ -26,26 +26,10 @@
 
                 <button class="btn btn-dark border border-secondary rounded-pill dropdown-toggle d-flex align-items-center gap-2 px-3"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    
-                    <!-- LÓGICA DA FOTO DE PERFIL -->
-                    <th:block th:if="${session.usuarioLogado.foto != null and !session.usuarioLogado.foto.isEmpty()}">
-
-                        <!-- Se o usuário tem uma foto, exibe a imagem -->
-                        <img th:src="${session.usuarioLogado.foto}"
-                             class="rounded-circle"
-                             style="width: 30px; height: 30px; object-fit: cover;"
-                             alt="Foto de Perfil">
-                    </th:block>
-                    
-                    <th:block th:unless="${session.usuarioLogado.foto != null and !session.usuarioLogado.foto.isEmpty()}">
-
-                        <!-- Se não tem foto, exibe o ícone padrão -->
-                        <div class="bg-light text-dark rounded-circle d-flex align-items-center justify-content-center"
-                             style="width: 30px; height: 30px;">
-                            <i class="bi bi-person-fill"></i>
-                        </div>
-                    </th:block>
-                    
+                    <div class="bg-light text-dark rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 30px; height: 30px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
                     <span th:text="${session.usuarioLogado.nome}">Usuário</span>
                 </button>
 
@@ -67,8 +51,10 @@
 
                     <li><hr class="dropdown-divider"></li>
 
+                    <li><hr class="dropdown-divider"></li>
+
                     <li>
-                        <a class="dropdown-item rounded py-2 text-danger" th:href="@{/logout}">
+                        <a class="dropdown-item rounded py-2 text-danger" th:href="@{/usuario/sair}">
                             <i class="bi bi-box-arrow-right me-2"></i> Sair
                         </a>
                     </li>

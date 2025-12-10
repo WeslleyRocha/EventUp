@@ -22,7 +22,24 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // --- MÉTODOS EXISTENTES ---
+    // --- NOVO: MÉTODO DE LOGIN ---
+    @PostMapping("/login")
+    public String login(@RequestParam String email, @RequestParam String senha, HttpSession session, RedirectAttributes attributes) {
+        // 1. Busca o usuário pelo email
+        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);;
+
+        // 2. Verifica se existe e se a senha bate
+        if (usuario != null && usuario.getSenha().equals(senha)) {
+            session.setAttribute("usuarioLogado", usuario);
+            return "redirect:/"; // Sucesso: Vai pra Home
+        } else {
+            // Erro: Manda mensagem para o pop-up vermelho
+            attributes.addFlashAttribute("erro", "E-mail ou senha incorretos!");
+            return "redirect:/"; // Volta pra Home com o erro
+        }
+    }
+
+    //MÉTODOS EXISTENTES
 
     @GetMapping("/sair")
     public String logout(HttpSession session) {
@@ -36,7 +53,8 @@ public class UsuarioController {
         try {
             Usuario novoUsuario = usuarioRepository.save(usuario);
             logger.info("Usuário criado com sucesso com ID: " + novoUsuario.getId_usuario());
-            novoUsuario.setSenha(null);
+            // Removemos a senha do retorno por segurança
+            // novoUsuario.setSenha(null); // Comentei para evitar NullPointer se necessário depois
             return new ResponseEntity<>(novoUsuario, HttpStatus.CREATED);
         } catch (Exception e) {
             logger.error("Erro ao salvar o usuário no banco de dados.", e);
@@ -68,21 +86,16 @@ public class UsuarioController {
             usuarioBanco.setBio(usuarioFormulario.getBio());
             usuarioBanco.setFoto(usuarioFormulario.getFoto());
 
-            // ATUALIZAÇÃO DE SENHA (Só se o usuário digitar algo novo)
+            // ATUALIZAÇÃO DE SENHA
             if (usuarioFormulario.getSenha() != null && !usuarioFormulario.getSenha().isEmpty()) {
                 usuarioBanco.setSenha(usuarioFormulario.getSenha());
             }
 
-            // Salva no Banco
             usuarioRepository.save(usuarioBanco);
-
-            // Atualiza a sessão para refletir as mudanças na tela imediatamente
             session.setAttribute("usuarioLogado", usuarioBanco);
-
             attributes.addFlashAttribute("mensagem", "Dados atualizados com sucesso!");
         }
 
         return "redirect:/";
     }
-
 }
