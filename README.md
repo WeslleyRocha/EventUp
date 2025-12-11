@@ -13,8 +13,10 @@ O **EventUp** é uma plataforma web desenvolvida para facilitar a descoberta e g
 Este projeto foi desenvolvido como parte de um desafio técnico/acadêmico, focado na entrega de valor e funcionalidade completa (Full Stack) dentro de um **prazo extremamente curto**.
 
 <div align="center">
-  <img src="https://github.com/WeslleyRocha/EventUp/blob/main/EventLogo.png?raw=true" alt="Logo EventUp" width="400">
-  <img src="https://github.com/WeslleyRocha/EventUp/blob/main/EventUpOn.png?raw=true" alt="Home EventUp" width="400">
+  <img src="https://github.com/WeslleyRocha/EventUp/blob/main/EventLogo.png?raw=true" alt="Logo EventUp" width="300">
+  <img src="https://github.com/WeslleyRocha/EventUp/blob/main/EventUpOn.png?raw=true" alt="Home EventUp" width="300">
+  <img src="https://github.com/WeslleyRocha/EventUp/blob/main/UsuarioLogado.png?raw=true" alt="UsuarioEventUp" width="300">
+  
 </div>
 
 
