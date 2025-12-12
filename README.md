@@ -14,11 +14,19 @@ Este projeto foi desenvolvido como parte de um desafio técnico/acadêmico, foca
 
 <div align="center">
   <img src="https://github.com/WeslleyRocha/EventUp/blob/main/EventLogo.png?raw=true" alt="Logo EventUp" width="300">
-  <img src="https://github.com/WeslleyRocha/EventUp/blob/main/EventUpOn.png?raw=true" alt="Home EventUp" width="300">
   <img src="https://github.com/WeslleyRocha/EventUp/blob/main/UsuarioLogado.png?raw=true" alt="UsuarioEventUp" width="300">
   
 </div>
 
+---
+
+## 📱 Demonstração da Aplicação
+
+Confira abaixo o sistema funcionando na prática.
+
+
+
+*(O vídeo mostra o cadastro de uma conta, o cálculo automático de juros e a persistência no banco de dados)*
 
 ---
 
@@ -105,7 +113,6 @@ Esta é a **primeira versão** do EventUp. Estamos cientes de que, para um ambie
     ```
 
 2.  **Configure o Banco de Dados:**
-    * Crie um banco de dados MySQL chamado `eventup_db` (ou ajuste no `application.properties`).
     * Certifique-se de configurar seu usuário e senha no arquivo `src/main/resources/application.properties`.
 
 3.  **Ajuste Importante (SQL):**
@@ -125,11 +132,21 @@ Esta é a **primeira versão** do EventUp. Estamos cientes de que, para um ambie
 
 ---
 
+## 📚 Documentação e Planejamento
+
+Acreditamos que um bom código começa com um bom plano. Abaixo você encontra os documentos que nós guiaram esse desenvolvimento:
+
+📄 **[Documentação](https://drive.google.com/drive/folders/1HSwsOZIBPoSaInaLfw-C8d0SJ1lsQmcw?usp=share_link)**
+<small>*(O documento original com os requisitos técnicos)*</small>
+
+---
+
 ## 🤝 Contribuição
 
 Este projeto foi desenvolvido com dedicação e trabalho em equipe. Agradecemos a todos os envolvidos na concepção, documentação e desenvolvimento.
 
 ---
 
-Developed 💜 by Equipe EventUp Rillary Lobo, Thaís Vieira, Weslley Rocha
-
+<p align="center">
+  © 2025 Rillary Lobo, Thaís Vieira, Weslley Rocha - Todos os direitos reservados. 
+</p>
