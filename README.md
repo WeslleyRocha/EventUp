@@ -20,16 +20,6 @@ Este projeto foi desenvolvido como parte de um desafio técnico/acadêmico, foca
 
 ---
 
-## 📱 Demonstração da Aplicação
-
-Confira abaixo o sistema funcionando na prática.
-
-
-
-*(O vídeo mostra o cadastro de uma conta, o cálculo automático de juros e a persistência no banco de dados)*
-
----
-
 ## 🛠️ Tecnologias Utilizadas
 
 O projeto foi construído utilizando uma arquitetura MVC (Model-View-Controller) robusta:
