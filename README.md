@@ -131,5 +131,5 @@ Este projeto foi desenvolvido com dedicação e trabalho em equipe. Agradecemos 
 
 ---
 
-Developed 💜 by Equipe EventUp Rillary Lobo, Thaís Viera, Weslley Rocha
+Developed 💜 by Equipe EventUp Rillary Lobo, Thaís Vieira, Weslley Rocha
 
